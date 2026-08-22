@@ -1,0 +1,12 @@
+import request from 'supertest';
+import { describe, expect, it } from 'vitest';
+import { app } from '../src/app.js';
+
+describe('health endpoint', () => {
+  it('returns the standard success envelope', async () => {
+    const response = await request(app).get('/api/health');
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.status).toBe('healthy');
+  });
+});
