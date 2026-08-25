@@ -3,146 +3,81 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color: #18181b;
+    background: #fafafa;
+  }
+
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
-    @apply bg-slate-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white min-h-screen antialiased;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(12, 141, 233, 0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(127, 0, 255, 0.1) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(0, 242, 254, 0.08) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply min-h-screen bg-paper-50 font-sans text-ink-900 antialiased selection:bg-brand-100 selection:text-ink-900;
   }
 
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-slate-950;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-slate-800 rounded-full border border-slate-700/50 hover:bg-brand-600 transition-colors;
-  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { @apply bg-paper-100; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-paper-400 hover:bg-ink-300; }
 }
 
 @layer components {
-  /* Glassmorphism primitives */
-  .glass-panel {
-    @apply bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 shadow-glass rounded-2xl;
-  }
+  .glass-panel { @apply rounded-xl border border-paper-300 bg-white shadow-sm; }
+  .glass-card { @apply rounded-xl border border-paper-300 bg-white transition-all duration-200 hover:border-paper-400 hover:shadow-glass-lg; }
+  .glass-header { @apply sticky top-0 z-40 border-b border-paper-300 bg-white/95 backdrop-blur; }
+  .glass-input { @apply w-full rounded-lg border border-paper-400 bg-white px-3.5 py-2.5 text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100; }
+  .glass-button { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-ink-900 px-5 py-2.5 font-medium text-white transition-colors hover:bg-ink-800; }
+  .glass-button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-paper-400 bg-white px-5 py-2.5 font-medium text-ink-800 transition-colors hover:bg-paper-100; }
+  .glow-border { @apply rounded-xl border border-brand-200; }
+  .gradient-text { @apply text-ink-900; }
+  .gradient-brand-text { @apply text-brand-600; }
 
-  .glass-card {
-    @apply bg-slate-900/60 backdrop-blur-md border border-slate-800/70 rounded-2xl transition-all duration-300 hover:border-slate-700 hover:bg-slate-900/80 hover:shadow-glass-lg hover:-translate-y-1;
-  }
-
-  .glass-header {
-    @apply bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 sticky top-0 z-40;
-  }
-
-  .glass-input {
-    @apply w-full bg-slate-900/80 border border-slate-700/80 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-100 placeholder-slate-400 rounded-xl px-4 py-2.5 transition-all outline-none;
-  }
-
-  .glass-button {
-    @apply bg-brand-600 hover:bg-brand-500 text-white font-medium px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-brand-600/25 active:scale-95 flex items-center justify-center gap-2;
-  }
-
-  .glass-button-secondary {
-    @apply bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700/80 font-medium px-5 py-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2;
-  }
-
-  .glow-border {
-    @apply relative border border-transparent before:absolute before:inset-0 before:rounded-2xl before:p-[1px] before:bg-gradient-to-r before:from-brand-500 before:via-glow-purple before:to-glow-cyan before:-z-10;
-  }
-
-  .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-brand-400;
-  }
-
-  .gradient-brand-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-glow-cyan to-glow-purple;
-  }
-
-  /* Backwards compatibility aliases for brutal tokens with modern glass aesthetic */
-  .brutal-border {
-    @apply border border-slate-800;
-  }
-
-  .brutal-border-3 {
-    @apply border-2 border-slate-700;
-  }
-
-  .brutal-card {
-    @apply bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl shadow-glass;
-  }
-
-  .brutal-card-hover {
-    @apply transition-all duration-300 hover:border-slate-700 hover:shadow-glass-lg hover:-translate-y-1;
-  }
-
-  .brutal-input {
-    @apply w-full bg-slate-900/90 border border-slate-800 focus:border-brand-500 rounded-xl px-4 py-2.5 text-slate-100 placeholder-slate-400 outline-none transition-all;
-  }
-
-  .brutal-label {
-    @apply block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5;
-  }
-
-  .brutal-badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-800/90 text-brand-300 border border-slate-700/80;
-  }
-
-  .brutal-tab {
-    @apply px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
-  }
-
-  .brutal-tab-active {
-    @apply bg-brand-600 text-white shadow-lg shadow-brand-600/25;
-  }
-
-  .brutal-tab-inactive {
-    @apply bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80;
-  }
-
-  .brutal-section-title {
-    @apply text-2xl font-bold tracking-tight gradient-text font-display;
-  }
-
-  .text-stroke {
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
-    color: transparent;
-  }
-
-  .grid-bg {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  .dot-bg {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1.5px, transparent 0);
-    background-size: 20px 20px;
-  }
+  /* Compatibility names used by existing pages; their visual treatment is intentionally minimalist. */
+  .brutal-border, .brutal-border-3 { @apply rounded-lg border border-paper-400; }
+  .brutal-card { @apply rounded-xl border border-paper-300 bg-white shadow-sm; }
+  .brutal-card-hover { @apply transition-all duration-200 hover:border-paper-400 hover:shadow-glass-lg; }
+  .brutal-input { @apply w-full rounded-lg border border-paper-400 bg-white px-3.5 py-2.5 text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100; }
+  .brutal-label { @apply mb-1.5 block text-sm font-medium text-ink-700; }
+  .brutal-badge { @apply inline-flex items-center gap-1.5 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700; }
+  .brutal-tab { @apply rounded-lg px-4 py-2.5 text-sm font-medium transition-colors; }
+  .brutal-tab-active { @apply bg-ink-900 text-white; }
+  .brutal-tab-inactive { @apply border border-paper-300 bg-white text-ink-600 hover:bg-paper-100 hover:text-ink-900; }
+  .brutal-section-title { @apply text-2xl font-semibold tracking-tight text-ink-900; }
+  .grid-bg, .dot-bg { @apply bg-paper-50; }
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* Older components still use dark utility names. Keep them aligned with the light product system. */
+  .bg-slate-950, .bg-slate-950\/80, .bg-slate-950\/60, .bg-slate-950\/40,
+  .bg-slate-900, .bg-slate-900\/90, .bg-slate-900\/80, .bg-slate-900\/70, .bg-slate-900\/60,
+  .bg-slate-800, .bg-slate-800\/90, .bg-slate-800\/80, .bg-slate-800\/60 {
+    background-color: #ffffff !important;
   }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
 
+  .border-slate-900, .border-slate-800, .border-slate-800\/80, .border-slate-700, .border-slate-700\/80, .border-slate-700\/60 {
+    border-color: #e4e4e7 !important;
+  }
+
+  .text-slate-100, .text-slate-200, .text-slate-300, .text-white { color: #18181b !important; }
+  .text-slate-400, .text-slate-500 { color: #71717a !important; }
+
+  .glass-button, .brutal-tab-active, .glass-button *, .brutal-tab-active *,
+  .bg-brand-500.text-white, .bg-brand-600.text-white, .bg-primary-500.text-white, .bg-primary-600.text-white,
+  .bg-teal-500.text-white, .bg-success-500.text-white, .bg-success-600.text-white,
+  .bg-danger-500.text-white, .bg-danger-600.text-white, .bg-ink-800.text-white, .bg-ink-900.text-white,
+  .bg-rose-500.text-white, .bg-emerald-500.text-white,
+  .bg-brand-500 .text-white, .bg-brand-600 .text-white, .bg-primary-500 .text-white, .bg-primary-600 .text-white,
+  .bg-teal-500 .text-white, .bg-success-500 .text-white, .bg-success-600 .text-white,
+  .bg-danger-500 .text-white, .bg-danger-600 .text-white, .bg-ink-800 .text-white, .bg-ink-900 .text-white,
+  .bg-rose-500 .text-white, .bg-emerald-500 .text-white {
+    color: #ffffff !important;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

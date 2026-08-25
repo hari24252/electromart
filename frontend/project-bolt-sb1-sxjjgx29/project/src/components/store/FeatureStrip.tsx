@@ -1,36 +1,26 @@
-import { Truck, RotateCcw, Shield, Headphones, Zap, CreditCard } from 'lucide-react';
+import { Truck, RotateCcw, ShieldCheck, CreditCard } from 'lucide-react';
+
+const features = [
+  { icon: Truck, title: 'Free delivery', detail: 'On orders above ₹999' },
+  { icon: RotateCcw, title: 'Easy returns', detail: 'Within 7 days of delivery' },
+  { icon: ShieldCheck, title: 'Genuine warranty', detail: 'Clear manufacturer coverage' },
+  { icon: CreditCard, title: 'Pay your way', detail: 'Secure payments and COD' },
+];
 
 export function FeatureStrip() {
-  const features = [
-    { icon: Truck, title: 'Free Shipping', desc: 'On orders ₹999+' },
-    { icon: RotateCcw, title: '7-Day Returns', desc: 'Hassle-free policy' },
-    { icon: Shield, title: 'Genuine Warranty', desc: 'On all products' },
-    { icon: CreditCard, title: 'COD Available', desc: 'Pay when you receive' },
-    { icon: Zap, title: 'Fast Dispatch', desc: 'Same-day for in-stock' },
-    { icon: Headphones, title: '24/7 Support', desc: 'Always here to help' },
-  ];
-
   return (
-    <div className="bg-white brutal-border-y border-y-2 border-ink-900">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {features.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <div
-                key={i}
-                className="flex flex-col items-center text-center p-3 brutal-border bg-paper-100 hover:bg-paper-200 transition-colors group"
-              >
-                <span className="brutal-border bg-white p-2.5 mb-2 group-hover:shadow-brutal-sm transition-all">
-                  <Icon className="w-5 h-5 text-ink-900" />
-                </span>
-                <p className="text-xs font-bold uppercase tracking-wide">{f.title}</p>
-                <p className="text-2xs text-ink-500 mt-0.5">{f.desc}</p>
-              </div>
-            );
-          })}
-        </div>
+    <section className="border-b border-paper-300 bg-white">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-paper-300 border-x border-paper-300 px-0 md:grid-cols-4 md:divide-y-0">
+        {features.map(({ icon: Icon, title, detail }) => (
+          <div key={title} className="flex items-center gap-3 p-4 md:p-5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-teal-50 text-teal-700"><Icon className="h-4 w-4" /></span>
+            <div>
+              <p className="text-sm font-semibold text-ink-900">{title}</p>
+              <p className="mt-0.5 text-xs text-ink-500">{detail}</p>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }

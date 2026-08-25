@@ -20,11 +20,11 @@ export function AdminLayout() {
   const title = pageTitles[location.pathname] ?? 'Admin Portal';
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-brand-500 selection:text-white">
+    <div className="flex min-h-screen bg-paper-100 text-ink-900 font-sans selection:bg-brand-200 selection:text-ink-900">
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 min-w-0 flex flex-col">
         <AdminTopBar onMenuClick={() => setSidebarOpen(true)} title={title} />
-        <main className="flex-1 p-4 lg:p-6 space-y-6">
+        <main className="flex-1 p-4 lg:p-7 space-y-6">
           <Outlet />
         </main>
       </div>

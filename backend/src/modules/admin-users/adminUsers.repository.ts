@@ -5,5 +5,5 @@ export const adminUsersRepository = {
     User.find(filter).select('-passwordHash').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
     User.countDocuments(filter),
   ]),
-  updateStatus: (id: string, isActive: boolean) => User.findByIdAndUpdate(id, { isActive, $inc: { authVersion: 1 } }, { new: true }),
+  updateStatus: (id: string, isActive: boolean) => User.findByIdAndUpdate(id, { isActive, $inc: { authVersion: 1 } }, { returnDocument: 'after' }),
 };

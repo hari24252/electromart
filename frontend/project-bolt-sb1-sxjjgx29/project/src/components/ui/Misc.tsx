@@ -22,12 +22,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             {item.href && !isLast ? (
               <Link
                 to={item.href}
-                className="text-xs font-semibold uppercase tracking-wide text-ink-500 hover:text-primary-600 transition-colors"
+                className="text-xs font-medium text-ink-500 transition-colors hover:text-primary-600"
               >
                 {item.label}
               </Link>
             ) : (
-              <span className="text-xs font-bold uppercase tracking-wide text-ink-900">{item.label}</span>
+              <span className="text-xs font-medium text-ink-900">{item.label}</span>
             )}
             {!isLast && <span className="text-ink-300 text-xs">/</span>}
           </div>
@@ -48,7 +48,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       {icon && <div className="mb-4 text-ink-300">{icon}</div>}
-      <h3 className="text-xl font-bold uppercase tracking-tight mb-2">{title}</h3>
+      <h3 className="mb-2 text-xl font-semibold tracking-tight">{title}</h3>
       {description && <p className="text-sm text-ink-500 max-w-md mb-6">{description}</p>}
       {action}
     </div>

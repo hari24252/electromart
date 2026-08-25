@@ -16,18 +16,18 @@ export const productRepository = {
     ]);
     return { items, total };
   },
-  update: (id: string, data: UpdateQuery<unknown>) => Product.findOneAndUpdate({ _id: id, deletedAt: null }, data, { new: true, runValidators: true }),
-  softDelete: (id: string) => Product.findOneAndUpdate({ _id: id, deletedAt: null }, { deletedAt: new Date(), status: 'archived' }, { new: true }),
+  update: (id: string, data: UpdateQuery<unknown>) => Product.findOneAndUpdate({ _id: id, deletedAt: null }, data, { returnDocument: 'after', runValidators: true }),
+  softDelete: (id: string) => Product.findOneAndUpdate({ _id: id, deletedAt: null }, { deletedAt: new Date(), status: 'archived' }, { returnDocument: 'after' }),
   findCategoryById: (id: string) => Category.findById(id),
   findCategoryBySlug: (slug: string) => Category.findOne({ slug }),
   updateRatingAggregate: (id: string, ratingsAvg: number, ratingsCount: number) => Product.findByIdAndUpdate(id, { ratingsAvg, ratingsCount }),
   adjustStock: (id: string, change: number) => Product.findOneAndUpdate(
     { _id: id, deletedAt: null, stock: { $gte: Math.max(0, -change) } },
     { $inc: { stock: change } },
-    { new: true },
+    { returnDocument: 'after' },
   ),
-  reserveStock: (id: string, quantity: number) => Product.findOneAndUpdate({ _id: id, deletedAt: null, status: 'active', stock: { $gte: quantity } }, { $inc: { stock: -quantity, soldCount: quantity } }, { new: true }),
-  restoreStock: (id: string, quantity: number) => Product.findByIdAndUpdate(id, { $inc: { stock: quantity, soldCount: -quantity } }, { new: true }),
+  reserveStock: (id: string, quantity: number) => Product.findOneAndUpdate({ _id: id, deletedAt: null, status: 'active', stock: { $gte: quantity } }, { $inc: { stock: -quantity, soldCount: quantity } }, { returnDocument: 'after' }),
+  restoreStock: (id: string, quantity: number) => Product.findByIdAndUpdate(id, { $inc: { stock: quantity, soldCount: -quantity } }, { returnDocument: 'after' }),
   createInventoryLog: (data: Record<string, unknown>) => InventoryLog.create(data),
   inventoryHistory: (productId: string, limit: number) => InventoryLog.find({ product: productId }).sort({ createdAt: -1 }).limit(limit).populate('actor', 'name email').lean(),
 };

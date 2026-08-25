@@ -6,6 +6,6 @@ export const cartRepository = {
   findRawByUser: (userId: string) => Cart.findOne({ user: userId }),
   create: (userId: string) => Cart.create({ user: userId, items: [] }),
   save: <T extends { save: () => Promise<unknown> }>(cart: T) => cart.save(),
-  clear: (userId: string) => Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } }, { new: true }),
+  clear: (userId: string) => Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } }, { returnDocument: 'after' }),
   findProduct: (productId: string) => Product.findOne({ _id: productId, deletedAt: null, status: 'active' }),
 };

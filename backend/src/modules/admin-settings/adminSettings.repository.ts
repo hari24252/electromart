@@ -5,6 +5,6 @@ export const adminSettingsRepository = {
   save: (input: Record<string, unknown>) => StoreSettings.findOneAndUpdate(
     { key: 'default' },
     { $set: input, $setOnInsert: { key: 'default' } },
-    { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true },
+    { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true, runValidators: true },
   ),
 };

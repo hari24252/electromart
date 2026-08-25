@@ -30,15 +30,15 @@ export function SortDropdown({ value, onChange, options }: SortDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 brutal-border bg-white px-4 py-2 text-sm font-semibold hover:bg-paper-100 transition-colors"
+        className="flex items-center gap-2 rounded-lg border border-paper-400 bg-white px-3.5 py-2.5 text-sm font-medium text-ink-700 transition-colors hover:border-ink-300 hover:bg-paper-100"
       >
-        <span className="text-ink-500 text-xs uppercase">Sort:</span>
+        <span className="text-ink-500">Sort:</span>
         <span>{current?.label ?? 'Select'}</span>
         <ChevronDown className={cn('w-4 h-4 transition-transform', isOpen && 'rotate-180')} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-56 bg-white brutal-border shadow-brutal z-50 animate-fade-in">
+        <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-paper-300 bg-white p-1 shadow-lg">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -47,8 +47,8 @@ export function SortDropdown({ value, onChange, options }: SortDropdownProps) {
                 setIsOpen(false);
               }}
               className={cn(
-                'w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-paper-100 transition-colors border-b border-ink-100 last:border-0',
-                value === opt.value && 'font-bold text-primary-600',
+                'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-ink-600 transition-colors hover:bg-paper-100',
+                value === opt.value && 'bg-brand-50 font-medium text-brand-700',
               )}
             >
               {opt.label}

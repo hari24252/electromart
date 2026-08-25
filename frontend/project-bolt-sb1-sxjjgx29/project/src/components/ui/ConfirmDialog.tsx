@@ -21,14 +21,14 @@ export function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-ink-950/70 animate-fade-in" onClick={onClose} />
-      <div className="relative w-full max-w-sm bg-white brutal-border-3 shadow-brutal-2xl animate-scale-in p-6">
-        <h3 className="text-lg font-bold uppercase tracking-tight mb-2">{title}</h3>
+      <div className="absolute inset-0 bg-ink-900/30" onClick={onClose} />
+      <div className="relative w-full max-w-sm rounded-2xl border border-paper-300 bg-white p-6 shadow-2xl">
+        <h3 className="mb-2 text-lg font-semibold tracking-tight">{title}</h3>
         <p className="text-sm text-ink-600 mb-6">{message}</p>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onClose}
-            className="brutal-border bg-white px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:bg-paper-200 transition-colors"
+            className="rounded-lg border border-paper-400 bg-white px-4 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-paper-100"
           >
             {cancelLabel}
           </button>
@@ -37,7 +37,7 @@ export function ConfirmDialog({
               onConfirm();
               onClose();
             }}
-            className={`brutal-border px-4 py-2 text-sm font-semibold uppercase tracking-wide shadow-brutal hover:shadow-brutal-hover hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-brutal-press transition-all ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${
               variant === 'danger'
                 ? 'bg-danger-500 text-white'
                 : variant === 'warning'

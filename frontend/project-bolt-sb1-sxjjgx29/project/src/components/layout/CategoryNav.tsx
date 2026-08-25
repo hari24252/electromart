@@ -30,8 +30,8 @@ export function CategoryNav() {
           onMouseLeave={() => setOpenMenu(null)}
         >
           <Link
-            to={`/catalog?category=${cat.slug}`}
-            className="flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-ink-800 transition-colors whitespace-nowrap"
+            to={`/?category=${cat.slug}`}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-brand-600 whitespace-nowrap"
             onClick={() => setOpenMenu(null)}
           >
             {cat.name}
@@ -39,12 +39,12 @@ export function CategoryNav() {
           </Link>
 
           {cat.children && cat.children.length > 0 && openMenu === cat._id && (
-            <div className="absolute top-full left-0 bg-white brutal-border shadow-brutal min-w-[200px] z-50 animate-fade-in">
+            <div className="absolute left-0 top-full z-50 mt-1 min-w-[210px] rounded-xl border border-paper-300 bg-white p-1 shadow-lg">
               {cat.children.map((sub) => (
                 <Link
                   key={sub._id}
-                  to={`/catalog?category=${cat.slug}&subCategory=${sub.slug}`}
-                  className="block px-4 py-2.5 text-sm font-medium hover:bg-paper-100 transition-colors border-b border-ink-100 last:border-0"
+                  to={`/?category=${cat.slug}&subCategory=${sub.slug}`}
+                  className="block rounded-lg px-3 py-2.5 text-sm text-ink-600 transition-colors hover:bg-paper-100 hover:text-ink-900"
                 >
                   {sub.name}
                   <span className="float-right text-xs text-ink-400">{sub.productCount}</span>

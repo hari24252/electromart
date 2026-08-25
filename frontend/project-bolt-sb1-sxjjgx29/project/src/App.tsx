@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
@@ -16,7 +16,6 @@ import { useCartStore } from '@/stores/cartStore';
 import { useDataStore } from '@/stores/dataStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
-const HomePage = lazy(() => import('@/pages/store/HomePage').then((module) => ({ default: module.HomePage })));
 const CatalogPage = lazy(() => import('@/pages/store/CatalogPage').then((module) => ({ default: module.CatalogPage })));
 const ProductDetailPage = lazy(() => import('@/pages/store/ProductDetailPage').then((module) => ({ default: module.ProductDetailPage })));
 const CartPage = lazy(() => import('@/pages/store/CartPage').then((module) => ({ default: module.CartPage })));
@@ -62,12 +61,17 @@ function StorefrontLayout({ children }: { children: ReactNode }) {
   );
 }
 
+function LegacyCatalogueRedirect() {
+  const location = useLocation();
+  return <Navigate replace to={`/${location.search}`} />;
+}
+
 function StoreRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<StorefrontLayout><HomePage /></StorefrontLayout>} />
-      <Route path="/catalog" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
-      <Route path="/products" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
+      <Route path="/" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
+      <Route path="/catalog" element={<LegacyCatalogueRedirect />} />
+      <Route path="/products" element={<LegacyCatalogueRedirect />} />
       <Route path="/product/:slug" element={<StorefrontLayout><ProductDetailPage /></StorefrontLayout>} />
       <Route path="/cart" element={<StorefrontLayout><CartPage /></StorefrontLayout>} />
       <Route path="/checkout" element={<ProtectedRoute><StorefrontLayout><CheckoutPage /></StorefrontLayout></ProtectedRoute>} />

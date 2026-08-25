@@ -26,7 +26,7 @@ export function WishlistPage() {
           icon={<Heart className="w-16 h-16" />}
           title="Your wishlist is empty"
           description="Save products you love by tapping the heart icon"
-          action={<Link to="/catalog"><Button size="lg"><ShoppingBag className="w-4 h-4" /> Browse Products</Button></Link>}
+          action={<Link to="/"><Button size="lg"><ShoppingBag className="w-4 h-4" /> Browse Products</Button></Link>}
         />
       </div>
     );

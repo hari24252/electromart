@@ -19,23 +19,23 @@ export const userAuthRepository = {
     ];
     return fields.length ? query.select(fields.join(' ')) : query;
   },
-  verifyUser: (id: string) => User.findByIdAndUpdate(id, { isVerified: true }, { new: true }),
-  updateProfile: (id: string, name: string) => User.findByIdAndUpdate(id, { name }, { new: true }),
-  updatePassword: (id: string, passwordHash: string) => User.findByIdAndUpdate(id, { passwordHash, $unset: { resetVerifiedUntil: 1, loginVerifiedUntil: 1, refreshSessionId: 1 }, $inc: { authVersion: 1 } }, { new: true }),
+  verifyUser: (id: string) => User.findByIdAndUpdate(id, { isVerified: true }, { returnDocument: 'after' }),
+  updateProfile: (id: string, name: string) => User.findByIdAndUpdate(id, { name }, { returnDocument: 'after' }),
+  updatePassword: (id: string, passwordHash: string) => User.findByIdAndUpdate(id, { passwordHash, $unset: { resetVerifiedUntil: 1, loginVerifiedUntil: 1, refreshSessionId: 1 }, $inc: { authVersion: 1 } }, { returnDocument: 'after' }),
   setResetVerified: (id: string, until: Date) => User.findByIdAndUpdate(id, { resetVerifiedUntil: until }),
   setLoginVerified: (id: string, until: Date) => User.findByIdAndUpdate(id, { loginVerifiedUntil: until }),
   clearLoginVerified: (id: string) => User.findByIdAndUpdate(id, { $unset: { loginVerifiedUntil: 1 } }),
   updateLastLogin: (id: string) => User.findByIdAndUpdate(id, { lastLoginAt: new Date() }),
-  invalidateSessions: (id: string) => User.findByIdAndUpdate(id, { $unset: { refreshSessionId: 1 }, $inc: { authVersion: 1 } }, { new: true }),
+  invalidateSessions: (id: string) => User.findByIdAndUpdate(id, { $unset: { refreshSessionId: 1 }, $inc: { authVersion: 1 } }, { returnDocument: 'after' }),
   beginRefreshSession: (id: string, authVersion: number, sessionId: string) => User.findOneAndUpdate(
     { _id: id, isActive: true, authVersion },
     { $set: { refreshSessionId: sessionId } },
-    { new: true },
+    { returnDocument: 'after' },
   ),
   rotateRefreshSession: (id: string, authVersion: number, currentSessionId: string, nextSessionId: string) => User.findOneAndUpdate(
     { _id: id, isActive: true, authVersion, refreshSessionId: currentSessionId },
     { $set: { refreshSessionId: nextSessionId } },
-    { new: true },
+    { returnDocument: 'after' },
   ),
   createOtp: async (identifier: string, purpose: 'signup' | 'login' | 'reset', codeHash: string) => {
     await Otp.deleteMany({ identifier: identifier.toLowerCase(), purpose });

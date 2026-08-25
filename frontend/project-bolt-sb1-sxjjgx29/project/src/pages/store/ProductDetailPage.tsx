@@ -62,7 +62,7 @@ export function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <h1 className="text-2xl font-bold uppercase tracking-tight mb-2">Product Not Found</h1>
         <p className="text-sm text-ink-500 mb-6">This product may have been removed or is no longer available.</p>
-        <Link to="/catalog" className="inline-flex items-center gap-2 brutal-border bg-ink-900 text-white px-6 py-3 font-bold text-sm uppercase">
+        <Link to="/" className="inline-flex items-center gap-2 rounded-lg bg-ink-900 px-6 py-3 text-sm font-medium text-white">
           Back to Catalog <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -82,7 +82,7 @@ export function ProductDetailPage() {
         items={[
           { label: 'Home', href: '/' },
           { label: 'Catalog', href: '/catalog' },
-          ...(category ? [{ label: category.name, href: `/catalog?category=${category.slug}` }] : []),
+          ...(category ? [{ label: category.name, href: `/?category=${category.slug}` }] : []),
           { label: product.name },
         ]}
       />

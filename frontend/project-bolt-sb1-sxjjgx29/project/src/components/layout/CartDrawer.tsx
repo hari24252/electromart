@@ -28,12 +28,12 @@ export function CartDrawer() {
     <Drawer isOpen={isOpen} onClose={closeCart} title={`Cart (${totalItems})`} width="md">
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-          <div className="brutal-border bg-paper-100 p-6 mb-4">
+          <div className="mb-4 rounded-full bg-paper-100 p-6">
             <ShoppingBag className="w-12 h-12 text-ink-300" />
           </div>
-          <p className="text-lg font-bold uppercase tracking-tight mb-2">Cart is empty</p>
+          <p className="mb-2 text-lg font-semibold tracking-tight">Cart is empty</p>
           <p className="text-sm text-ink-500 mb-6">Add some products to get started</p>
-          <Button onClick={() => { closeCart(); navigate('/catalog'); }}>
+          <Button onClick={() => { closeCart(); navigate('/'); }}>
             Browse Products
           </Button>
         </div>
@@ -41,9 +41,9 @@ export function CartDrawer() {
         <>
           <div className="p-4 space-y-3">
             {items.map((item) => (
-              <div key={item.productId} className="flex gap-3 brutal-border bg-white p-3">
+              <div key={item.productId} className="flex gap-3 rounded-xl border border-paper-300 bg-white p-3">
                 <Link to={`/product/${item.slug}`} onClick={closeCart} className="flex-shrink-0">
-                  <MediaImage src={item.image} alt={item.name} fallbackLabel={item.name} className="w-20 h-20 object-cover brutal-border" />
+                  <MediaImage src={item.image} alt={item.name} fallbackLabel={item.name} className="h-20 w-20 rounded-lg border border-paper-300 object-cover" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link
@@ -59,7 +59,7 @@ export function CartDrawer() {
                   )}
 
                   <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center brutal-border">
+                    <div className="flex items-center rounded-lg border border-paper-300">
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                         className="p-1.5 hover:bg-paper-100 transition-colors"
@@ -77,7 +77,7 @@ export function CartDrawer() {
                     </div>
                     <button
                       onClick={() => removeItem(item.productId)}
-                      className="p-1.5 hover:bg-danger-500 hover:text-white transition-colors brutal-border"
+                      className="rounded-lg border border-paper-300 p-1.5 text-ink-500 transition-colors hover:border-danger-100 hover:bg-danger-50 hover:text-danger-600"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -88,16 +88,16 @@ export function CartDrawer() {
 
             <button
               onClick={clearCart}
-              className="w-full text-xs font-bold uppercase tracking-wide text-danger-600 hover:text-danger-700 py-2"
+            className="w-full py-2 text-sm font-medium text-danger-600 hover:text-danger-700"
             >
               Clear Cart
             </button>
           </div>
 
           {/* Sticky footer */}
-          <div className="border-t-2 border-ink-900 p-4 bg-paper-100">
+          <div className="border-t border-paper-300 bg-paper-100 p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold uppercase tracking-wide">Subtotal</span>
+              <span className="text-sm font-medium">Subtotal</span>
               <span className="text-lg font-bold">{formatCurrency(itemsTotal)}</span>
             </div>
             <p className="text-xs text-ink-500 mb-3">Shipping calculated at checkout. COD available.</p>
@@ -106,7 +106,7 @@ export function CartDrawer() {
             </Button>
             <button
               onClick={closeCart}
-              className="w-full mt-2 text-xs font-bold uppercase tracking-wide text-ink-500 hover:text-ink-900 py-2"
+              className="mt-2 w-full py-2 text-sm font-medium text-ink-500 hover:text-ink-900"
             >
               Continue Shopping
             </button>

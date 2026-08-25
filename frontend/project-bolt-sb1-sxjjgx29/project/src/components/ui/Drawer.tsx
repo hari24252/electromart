@@ -21,20 +21,20 @@ export function Drawer({ isOpen, onClose, children, title, side = 'right', width
 
   return (
     <div className="fixed inset-0 z-[100]">
-      <div className="absolute inset-0 bg-ink-950/70 animate-fade-in" onClick={onClose} />
+      <div className="absolute inset-0 bg-ink-900/30" onClick={onClose} />
       <div
         className={cn(
-          'absolute top-0 bottom-0 w-full bg-white brutal-border-3 shadow-brutal-2xl flex flex-col animate-slide-in-right',
-          side === 'right' ? 'right-0' : 'left-0 animate-slide-in-left',
+          'absolute top-0 bottom-0 flex w-full flex-col bg-white shadow-2xl',
+          side === 'right' ? 'right-0 rounded-l-2xl' : 'left-0 rounded-r-2xl',
           widthClasses[width],
         )}
       >
         {title && (
-          <div className="flex items-center justify-between p-4 border-b-2 border-ink-900 bg-paper-100">
-            <h3 className="text-lg font-bold uppercase tracking-tight">{title}</h3>
+          <div className="flex items-center justify-between border-b border-paper-300 p-4">
+            <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
             <button
               onClick={onClose}
-              className="brutal-border bg-white px-3 py-1 font-bold text-sm hover:bg-danger-500 hover:text-white transition-colors"
+              className="rounded-lg p-2 text-ink-500 transition-colors hover:bg-paper-100 hover:text-ink-900"
             >
               ✕
             </button>

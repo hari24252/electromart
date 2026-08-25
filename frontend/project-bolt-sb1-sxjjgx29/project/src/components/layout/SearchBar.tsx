@@ -32,7 +32,7 @@ export function SearchBar({ className }: { className?: string }) {
     e.preventDefault();
     if (query.trim()) {
       setFilters({ search: query.trim(), page: 1 });
-      navigate(`/catalog?search=${encodeURIComponent(query.trim())}`);
+      navigate(`/?search=${encodeURIComponent(query.trim())}`);
       setIsOpen(false);
     }
   };
@@ -49,7 +49,7 @@ export function SearchBar({ className }: { className?: string }) {
           }}
           onFocus={() => setIsOpen(true)}
           placeholder="Search products, brands, categories..."
-          className="w-full brutal-border bg-white pl-11 pr-10 py-2.5 text-sm focus:outline-none focus:shadow-brutal focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all"
+          className="w-full rounded-lg border border-paper-400 bg-white py-2.5 pl-11 pr-10 text-sm text-ink-900 outline-none transition-colors placeholder:text-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
         />
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-500" />
         {query && (
@@ -67,7 +67,7 @@ export function SearchBar({ className }: { className?: string }) {
       </form>
 
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full mt-1 w-full bg-white brutal-border shadow-brutal z-50 animate-fade-in">
+        <div className="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-paper-300 bg-white shadow-lg">
           {suggestions.map((p) => (
             <button
               key={p._id}
@@ -76,9 +76,9 @@ export function SearchBar({ className }: { className?: string }) {
                 setQuery('');
                 setIsOpen(false);
               }}
-              className="w-full flex items-center gap-3 p-2.5 hover:bg-paper-100 transition-colors text-left"
+              className="flex w-full items-center gap-3 p-3 text-left transition-colors hover:bg-paper-100"
             >
-              <MediaImage src={p.thumbnail} alt={p.name} fallbackLabel={p.name} className="w-10 h-10 object-cover brutal-border" />
+              <MediaImage src={p.thumbnail} alt={p.name} fallbackLabel={p.name} className="h-10 w-10 rounded-md border border-paper-300 object-cover" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">{p.name}</p>
                 <p className="text-xs text-ink-500">{p.brand}</p>
@@ -87,7 +87,7 @@ export function SearchBar({ className }: { className?: string }) {
           ))}
           <button
             onClick={handleSubmit}
-            className="w-full p-2.5 border-t-2 border-ink-900 bg-ink-900 text-white text-sm font-bold uppercase tracking-wide hover:bg-ink-800 transition-colors"
+            className="w-full border-t border-paper-300 px-3 py-3 text-left text-sm font-semibold text-brand-600 transition-colors hover:bg-brand-50"
           >
             See all results
           </button>

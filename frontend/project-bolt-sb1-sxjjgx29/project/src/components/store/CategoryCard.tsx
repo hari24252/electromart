@@ -6,57 +6,34 @@ import { ProductImagePlaceholder } from '@/components/common/ProductImagePlaceho
 
 interface CategoryCardProps {
   category: Category;
-  variant?: 'default' | 'large';
+  variant?: 'default' | 'wide';
   className?: string;
 }
 
 export function CategoryCard({ category, variant = 'default', className }: CategoryCardProps) {
-  if (variant === 'large') {
+  if (variant === 'wide') {
     return (
-      <Link
-        to={`/catalog?category=${category.slug}`}
-        className={cn('block relative overflow-hidden glass-card group', className)}
-      >
-        <div className="aspect-[4/3] overflow-hidden bg-slate-950/60">
-          <ProductImagePlaceholder
-            src={category.image}
-            alt={category.name}
-            category={category.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+      <Link to={`/?category=${category.slug}`} className={cn('group flex items-center gap-4 rounded-xl border border-paper-300 bg-white p-3 transition-all hover:border-paper-400 hover:shadow-glass', className)}>
+        <ProductImagePlaceholder src={category.image} alt={category.name} category={category.name} className="h-20 w-20 rounded-xl object-cover" />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-ink-900 group-hover:text-brand-600">{category.name}</h3>
+          <p className="mt-1 text-xs text-ink-500">{category.productCount ?? 0} products</p>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-          <h3 className="text-xl font-bold font-display">{category.name}</h3>
-          <p className="text-xs text-slate-400">{category.productCount || 12} Products Available</p>
-          <div className="flex items-center gap-1.5 mt-3 text-xs font-semibold text-brand-400">
-            Explore Category <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
+        <ArrowRight className="h-4 w-4 text-ink-400 group-hover:text-brand-600" />
       </Link>
     );
   }
 
   return (
-    <Link
-      to={`/catalog?category=${category.slug}`}
-      className={cn('block glass-card group p-3 text-center space-y-3', className)}
-    >
-      <div className="aspect-square overflow-hidden rounded-xl bg-slate-950/80 border border-slate-800">
-        <ProductImagePlaceholder
-          src={category.image}
-          alt={category.name}
-          category={category.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-      </div>
-      <div>
-        <h3 className="text-xs font-bold font-display text-white group-hover:text-brand-300 transition-colors">
-          {category.name}
-        </h3>
-        <p className="text-[10px] font-mono text-slate-400 mt-0.5">{category.productCount || 12} Items</p>
+    <Link to={`/?category=${category.slug}`} className={cn('group block overflow-hidden rounded-xl border border-paper-300 bg-white transition-all hover:border-paper-400 hover:shadow-glass', className)}>
+      <ProductImagePlaceholder src={category.image} alt={category.name} category={category.name} className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+      <div className="flex items-center justify-between gap-2 p-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-semibold text-ink-900 group-hover:text-brand-600">{category.name}</h3>
+          <p className="mt-0.5 text-xs text-ink-500">{category.productCount ?? 0} products</p>
+        </div>
+        <ArrowRight className="h-4 w-4 shrink-0 text-ink-400 group-hover:text-brand-600" />
       </div>
     </Link>
   );
 }
-

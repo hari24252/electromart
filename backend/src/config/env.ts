@@ -18,12 +18,13 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_FROM: z.string().default('ElectroMart <no-reply@example.com>'),
-  CLOUDINARY_URL: z.string().url().optional(),
-  REDIS_URL: z.string().url().optional(),
+  CLOUDINARY_URL: z.union([z.string().url(), z.literal('')]).transform((v) => (v === '' ? undefined : v)).optional(),
+  REDIS_URL: z.union([z.string().url(), z.literal('')]).transform((v) => (v === '' ? undefined : v)).optional(),
   CACHE_TTL_SECONDS: z.coerce.number().int().min(0).max(3600).default(60),
   INITIAL_ADMIN_NAME: z.string().min(2).default('Store Administrator'),
   INITIAL_ADMIN_EMAIL: z.string().email().default('hariharan64847@gmail.com'),
   INITIAL_ADMIN_PASSWORD: z.string().min(10).default('hariharan@28'),
+  SEED_DEMO_CATALOG: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
 });
 
 const parsed = schema.safeParse(process.env);

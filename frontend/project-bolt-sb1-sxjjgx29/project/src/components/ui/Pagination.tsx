@@ -30,7 +30,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="brutal-border bg-white px-3 py-2 text-sm font-bold disabled:opacity-40 hover:bg-paper-200 transition-colors"
+        className="rounded-lg border border-paper-400 bg-white px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-paper-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         ←
       </button>
@@ -40,8 +40,8 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
             key={i}
             onClick={() => onPageChange(p)}
             className={cn(
-              'brutal-border px-3 py-2 text-sm font-bold transition-all',
-              p === page ? 'bg-ink-900 text-white shadow-brutal-sm' : 'bg-white hover:bg-paper-200',
+              'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+              p === page ? 'border-ink-900 bg-ink-900 text-white' : 'border-paper-400 bg-white text-ink-700 hover:bg-paper-100',
             )}
           >
             {p}
@@ -55,7 +55,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="brutal-border bg-white px-3 py-2 text-sm font-bold disabled:opacity-40 hover:bg-paper-200 transition-colors"
+        className="rounded-lg border border-paper-400 bg-white px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-paper-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         →
       </button>

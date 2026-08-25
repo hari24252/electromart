@@ -40,7 +40,7 @@ export function OrdersPage() {
           title="No orders yet"
           description="When you place orders, they'll show up here"
           action={
-            <Link to="/catalog">
+            <Link to="/">
               <Button size="lg">Start Shopping</Button>
             </Link>
           }

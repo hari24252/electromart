@@ -26,22 +26,22 @@ export function Modal({ isOpen, onClose, children, title, size = 'md', closeOnOv
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-ink-950/70 animate-fade-in"
+        className="absolute inset-0 bg-ink-900/30"
         onClick={closeOnOverlay ? onClose : undefined}
       />
       <div
         className={cn(
-          'relative w-full bg-white brutal-border-3 shadow-brutal-2xl animate-scale-in',
+          'relative flex w-full flex-col overflow-hidden rounded-2xl border border-paper-300 bg-white shadow-2xl',
           'max-h-[90vh] overflow-hidden flex flex-col',
           sizeClasses[size],
         )}
       >
         {title && (
-          <div className="flex items-center justify-between p-4 border-b-2 border-ink-900 bg-paper-100">
-            <h3 className="text-lg font-bold uppercase tracking-tight">{title}</h3>
+          <div className="flex items-center justify-between border-b border-paper-300 p-4">
+            <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
             <button
               onClick={onClose}
-              className="brutal-border bg-white p-1.5 hover:bg-danger-500 hover:text-white transition-colors"
+              className="rounded-lg p-2 text-ink-500 transition-colors hover:bg-paper-100 hover:text-ink-900"
             >
               <X className="w-5 h-5" />
             </button>
@@ -50,7 +50,7 @@ export function Modal({ isOpen, onClose, children, title, size = 'md', closeOnOv
         {!title && (
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 z-10 brutal-border bg-white p-1.5 hover:bg-danger-500 hover:text-white transition-colors"
+            className="absolute right-3 top-3 z-10 rounded-lg border border-paper-300 bg-white p-2 text-ink-500 shadow-sm transition-colors hover:bg-paper-100 hover:text-ink-900"
           >
             <X className="w-5 h-5" />
           </button>

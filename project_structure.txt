@@ -1,0 +1,307 @@
+.
+├── backend
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── IMPLEMENTATION.md
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── pnpm-lock.yaml
+│   ├── public
+│   │   └── uploads
+│   │       └── products
+│   ├── Readme.md
+│   ├── src
+│   │   ├── app.ts
+│   │   ├── config
+│   │   │   ├── db.ts
+│   │   │   ├── env.ts
+│   │   │   ├── logger.ts
+│   │   │   └── mail.ts
+│   │   ├── docs
+│   │   │   └── openapi.ts
+│   │   ├── jobs
+│   │   │   ├── email.queue.ts
+│   │   │   └── email.worker.ts
+│   │   ├── middlewares
+│   │   │   ├── authenticateAdmin.ts
+│   │   │   ├── authenticateAny.ts
+│   │   │   ├── authenticateUser.ts
+│   │   │   ├── errorHandler.ts
+│   │   │   ├── fileUpload.ts
+│   │   │   ├── ## GitHub Copilot Chat.md
+│   │   │   ├── notFoundHandler.ts
+│   │   │   ├── parseMultipart.ts
+│   │   │   ├── rateLimiter.ts
+│   │   │   └── validateRequest.ts
+│   │   ├── models
+│   │   │   ├── admin.model.ts
+│   │   │   ├── auditLog.model.ts
+│   │   │   ├── cart.model.ts
+│   │   │   ├── category.model.ts
+│   │   │   ├── coupon.model.ts
+│   │   │   ├── inventoryLog.model.ts
+│   │   │   ├── newsletterSubscriber.model.ts
+│   │   │   ├── order.model.ts
+│   │   │   ├── otp.model.ts
+│   │   │   ├── product.model.ts
+│   │   │   ├── review.model.ts
+│   │   │   ├── storeSettings.model.ts
+│   │   │   └── user.model.ts
+│   │   ├── modules
+│   │   │   ├── address
+│   │   │   │   ├── address.controller.ts
+│   │   │   │   ├── address.repository.ts
+│   │   │   │   ├── address.routes.ts
+│   │   │   │   ├── address.service.ts
+│   │   │   │   └── address.validation.ts
+│   │   │   ├── admin-auth
+│   │   │   │   ├── adminAuth.controller.ts
+│   │   │   │   ├── adminAuth.repository.ts
+│   │   │   │   ├── adminAuth.routes.ts
+│   │   │   │   ├── adminAuth.service.ts
+│   │   │   │   └── adminAuth.validation.ts
+│   │   │   ├── admin-dashboard
+│   │   │   │   ├── adminDashboard.controller.ts
+│   │   │   │   ├── adminDashboard.repository.ts
+│   │   │   │   ├── adminDashboard.routes.ts
+│   │   │   │   ├── adminDashboard.service.ts
+│   │   │   │   └── adminDashboard.validation.ts
+│   │   │   ├── admin-settings
+│   │   │   │   ├── adminSettings.controller.ts
+│   │   │   │   ├── adminSettings.repository.ts
+│   │   │   │   ├── adminSettings.routes.ts
+│   │   │   │   ├── adminSettings.service.ts
+│   │   │   │   └── adminSettings.validation.ts
+│   │   │   ├── admin-users
+│   │   │   │   ├── adminUsers.controller.ts
+│   │   │   │   ├── adminUsers.repository.ts
+│   │   │   │   ├── adminUsers.routes.ts
+│   │   │   │   ├── adminUsers.service.ts
+│   │   │   │   └── adminUsers.validation.ts
+│   │   │   ├── cart
+│   │   │   │   ├── cart.controller.ts
+│   │   │   │   ├── cart.repository.ts
+│   │   │   │   ├── cart.routes.ts
+│   │   │   │   ├── cart.service.ts
+│   │   │   │   └── cart.validation.ts
+│   │   │   ├── category
+│   │   │   │   ├── category.controller.ts
+│   │   │   │   ├── category.repository.ts
+│   │   │   │   ├── category.routes.ts
+│   │   │   │   ├── category.service.ts
+│   │   │   │   └── category.validation.ts
+│   │   │   ├── coupon
+│   │   │   │   ├── coupon.controller.ts
+│   │   │   │   ├── coupon.repository.ts
+│   │   │   │   ├── coupon.routes.ts
+│   │   │   │   ├── coupon.service.ts
+│   │   │   │   └── coupon.validation.ts
+│   │   │   ├── newsletter
+│   │   │   │   ├── newsletter.controller.ts
+│   │   │   │   ├── newsletter.repository.ts
+│   │   │   │   ├── newsletter.routes.ts
+│   │   │   │   ├── newsletter.service.ts
+│   │   │   │   └── newsletter.validation.ts
+│   │   │   ├── order
+│   │   │   │   ├── order.controller.ts
+│   │   │   │   ├── order.repository.ts
+│   │   │   │   ├── order.routes.ts
+│   │   │   │   ├── order.service.ts
+│   │   │   │   └── order.validation.ts
+│   │   │   ├── product
+│   │   │   │   ├── product.controller.ts
+│   │   │   │   ├── product.repository.ts
+│   │   │   │   ├── product.routes.ts
+│   │   │   │   ├── product.service.ts
+│   │   │   │   └── product.validation.ts
+│   │   │   ├── review
+│   │   │   │   ├── review.controller.ts
+│   │   │   │   ├── review.repository.ts
+│   │   │   │   ├── review.routes.ts
+│   │   │   │   ├── review.service.ts
+│   │   │   │   └── review.validation.ts
+│   │   │   ├── shared
+│   │   │   │   ├── pagination.ts
+│   │   │   │   └── requireAuth.ts
+│   │   │   ├── user-auth
+│   │   │   │   ├── userAuth.controller.ts
+│   │   │   │   ├── userAuth.repository.ts
+│   │   │   │   ├── userAuth.routes.ts
+│   │   │   │   ├── userAuth.service.ts
+│   │   │   │   └── userAuth.validation.ts
+│   │   │   └── wishlist
+│   │   │       ├── wishlist.controller.ts
+│   │   │       ├── wishlist.repository.ts
+│   │   │       ├── wishlist.routes.ts
+│   │   │       ├── wishlist.service.ts
+│   │   │       └── wishlist.validation.ts
+│   │   ├── scripts
+│   │   │   ├── seedAdmin.ts
+│   │   │   ├── seedDemoCatalog.ts
+│   │   │   └── syncIndexes.ts
+│   │   ├── server.ts
+│   │   ├── services
+│   │   │   ├── audit.service.ts
+│   │   │   ├── cache.service.ts
+│   │   │   └── media.service.ts
+│   │   ├── types
+│   │   │   ├── auth.ts
+│   │   │   └── express.d.ts
+│   │   ├── utils
+│   │   │   ├── apiError.ts
+│   │   │   ├── apiResponse.ts
+│   │   │   ├── asyncHandler.ts
+│   │   │   ├── ids.ts
+│   │   │   ├── otp.ts
+│   │   │   ├── slug.ts
+│   │   │   └── tokens.ts
+│   │   └── worker.ts
+│   ├── tests
+│   │   ├── api-boundaries.test.ts
+│   │   ├── health.test.ts
+│   │   └── tokens.test.ts
+│   └── tsconfig.json
+├── frontend
+│   ├── package.json
+│   ├── package-lock.json
+│   └── project-bolt-sb1-sxjjgx29
+│       └── project
+│           ├── Dockerfile
+│           ├── index.html
+│           ├── nginx.conf
+│           ├── package.json
+│           ├── package-lock.json
+│           ├── pnpm-lock.yaml
+│           ├── postcss.config.js
+│           ├── README.md
+│           ├── src
+│           │   ├── api
+│           │   │   ├── client.ts
+│           │   │   └── services.ts
+│           │   ├── App.tsx
+│           │   ├── components
+│           │   │   ├── admin
+│           │   │   │   ├── AdminLayout.tsx
+│           │   │   │   ├── AdminSidebar.tsx
+│           │   │   │   ├── AdminTopBar.tsx
+│           │   │   │   ├── RevenueChart.tsx
+│           │   │   │   └── StatusBadge.tsx
+│           │   │   ├── common
+│           │   │   │   ├── ErrorBoundary.tsx
+│           │   │   │   ├── ProductImagePlaceholder.tsx
+│           │   │   │   ├── SkeletonLoader.tsx
+│           │   │   │   └── ToastNotification.tsx
+│           │   │   ├── layout
+│           │   │   │   ├── BackToTop.tsx
+│           │   │   │   ├── CartDrawer.tsx
+│           │   │   │   ├── CategoryNav.tsx
+│           │   │   │   ├── Footer.tsx
+│           │   │   │   ├── Header.tsx
+│           │   │   │   ├── Logo.tsx
+│           │   │   │   ├── SearchBar.tsx
+│           │   │   │   └── UserMenu.tsx
+│           │   │   ├── store
+│           │   │   │   ├── AddressCard.tsx
+│           │   │   │   ├── AddressForm.tsx
+│           │   │   │   ├── BrandStrip.tsx
+│           │   │   │   ├── Carousel.tsx
+│           │   │   │   ├── CategoryCard.tsx
+│           │   │   │   ├── CheckoutSteps.tsx
+│           │   │   │   ├── CouponInput.tsx
+│           │   │   │   ├── FeatureStrip.tsx
+│           │   │   │   ├── FilterSidebar.tsx
+│           │   │   │   ├── FlashDealTimer.tsx
+│           │   │   │   ├── HeroSection.tsx
+│           │   │   │   ├── OrderSummaryCard.tsx
+│           │   │   │   ├── OrderTracker.tsx
+│           │   │   │   ├── ProductCard.tsx
+│           │   │   │   ├── ProductCompareModal.tsx
+│           │   │   │   ├── ProductGallery.tsx
+│           │   │   │   ├── ProductGrid.tsx
+│           │   │   │   ├── ProductInfo.tsx
+│           │   │   │   ├── QuickViewModal.tsx
+│           │   │   │   ├── RecentlyViewed.tsx
+│           │   │   │   ├── ReviewSection.tsx
+│           │   │   │   ├── SortDropdown.tsx
+│           │   │   │   └── SpecTable.tsx
+│           │   │   └── ui
+│           │   │       ├── Accordion.tsx
+│           │   │       ├── Alert.tsx
+│           │   │       ├── Badge.tsx
+│           │   │       ├── Button.tsx
+│           │   │       ├── Card.tsx
+│           │   │       ├── ConfirmDialog.tsx
+│           │   │       ├── Drawer.tsx
+│           │   │       ├── Input.tsx
+│           │   │       ├── MediaImage.tsx
+│           │   │       ├── Misc.tsx
+│           │   │       ├── Modal.tsx
+│           │   │       ├── Pagination.tsx
+│           │   │       ├── ProgressBar.tsx
+│           │   │       ├── Rating.tsx
+│           │   │       ├── Select.tsx
+│           │   │       ├── Spinner.tsx
+│           │   │       ├── StatCard.tsx
+│           │   │       ├── Switch.tsx
+│           │   │       ├── Table.tsx
+│           │   │       ├── Tabs.tsx
+│           │   │       └── Toast.tsx
+│           │   ├── index.css
+│           │   ├── lib
+│           │   │   ├── media.ts
+│           │   │   ├── mockData.ts
+│           │   │   ├── recentlyViewed.ts
+│           │   │   ├── sanitizeHtml.ts
+│           │   │   └── utils.ts
+│           │   ├── main.tsx
+│           │   ├── pages
+│           │   │   ├── admin
+│           │   │   │   ├── AdminCategoriesPage.tsx
+│           │   │   │   ├── AdminCouponsPage.tsx
+│           │   │   │   ├── AdminCustomersPage.tsx
+│           │   │   │   ├── AdminLoginPage.tsx
+│           │   │   │   ├── AdminOrderDetailPage.tsx
+│           │   │   │   ├── AdminOrdersPage.tsx
+│           │   │   │   ├── AdminProductsPage.tsx
+│           │   │   │   ├── AdminSettingsPage.tsx
+│           │   │   │   ├── DashboardPage.tsx
+│           │   │   │   └── ProductFormPage.tsx
+│           │   │   └── store
+│           │   │       ├── AddressesPage.tsx
+│           │   │       ├── CartPage.tsx
+│           │   │       ├── CatalogPage.tsx
+│           │   │       ├── CheckoutPage.tsx
+│           │   │       ├── ForgotPasswordPage.tsx
+│           │   │       ├── HomePage.tsx
+│           │   │       ├── LoginPage.tsx
+│           │   │       ├── NotFoundPage.tsx
+│           │   │       ├── OrderDetailPage.tsx
+│           │   │       ├── OrdersPage.tsx
+│           │   │       ├── ProductDetailPage.tsx
+│           │   │       ├── ProfilePage.tsx
+│           │   │       ├── SignupPage.tsx
+│           │   │       └── WishlistPage.tsx
+│           │   ├── routes
+│           │   │   ├── AdminRoute.tsx
+│           │   │   └── ProtectedRoute.tsx
+│           │   ├── stores
+│           │   │   ├── authStore.ts
+│           │   │   ├── cartStore.ts
+│           │   │   ├── dataStore.ts
+│           │   │   ├── uiStore.ts
+│           │   │   └── wishlistStore.ts
+│           │   ├── types
+│           │   │   └── index.ts
+│           │   └── vite-env.d.ts
+│           ├── tailwind.config.js
+│           ├── tsconfig.json
+│           ├── tsconfig.node.json
+│           ├── tsconfig.node.tsbuildinfo
+│           ├── tsconfig.tsbuildinfo
+│           ├── vite.config.d.ts
+│           ├── vite.config.js
+│           └── vite.config.ts
+├── project_structure.txt
+└── README.md
+
+50 directories, 255 files

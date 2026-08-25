@@ -52,7 +52,7 @@ export function CartPage() {
           title="Your cart is empty"
           description="Looks like you haven't added anything yet"
           action={
-            <Link to="/catalog">
+            <Link to="/">
               <Button size="lg">Start Shopping <ArrowRight className="w-4 h-4" /></Button>
             </Link>
           }
@@ -131,7 +131,7 @@ export function CartPage() {
             >
               Clear Cart
             </button>
-            <Link to="/catalog" className="text-xs font-bold uppercase tracking-wide text-primary-600 hover:text-primary-700">
+            <Link to="/" className="text-sm font-medium text-primary-600 hover:text-primary-700">
               Continue Shopping
             </Link>
           </div>

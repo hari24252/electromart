@@ -13,8 +13,8 @@ export function Card({ children, className, hover, onClick }: CardProps) {
     <div
       onClick={onClick}
       className={cn(
-        'brutal-card bg-white',
-        hover && 'brutal-card-hover cursor-pointer',
+        'rounded-xl border border-paper-300 bg-white shadow-sm',
+        hover && 'cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-paper-400 hover:shadow-glass-lg',
         className,
       )}
     >
@@ -29,7 +29,7 @@ interface CardHeaderProps {
 }
 
 export function CardHeader({ children, className }: CardHeaderProps) {
-  return <div className={cn('p-4 border-b-2 border-ink-900', className)}>{children}</div>;
+  return <div className={cn('border-b border-paper-300 p-4', className)}>{children}</div>;
 }
 
 interface CardBodyProps {
@@ -47,5 +47,5 @@ interface CardFooterProps {
 }
 
 export function CardFooter({ children, className }: CardFooterProps) {
-  return <div className={cn('p-4 border-t-2 border-ink-900', className)}>{children}</div>;
+  return <div className={cn('border-t border-paper-300 p-4', className)}>{children}</div>;
 }

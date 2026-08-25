@@ -8,7 +8,7 @@ interface TableProps {
 
 export function Table({ children, className }: TableProps) {
   return (
-    <div className={cn('w-full overflow-x-auto brutal-border bg-white', className)}>
+    <div className={cn('w-full overflow-x-auto rounded-xl border border-paper-300 bg-white', className)}>
       <table className="w-full">{children}</table>
     </div>
   );
@@ -16,7 +16,7 @@ export function Table({ children, className }: TableProps) {
 
 export function THead({ children }: { children: ReactNode }) {
   return (
-    <thead className="bg-ink-900 text-white">
+    <thead className="bg-paper-100 text-ink-600">
       <tr>{children}</tr>
     </thead>
   );
@@ -26,7 +26,7 @@ export function TH({ children, className }: { children: ReactNode; className?: s
   return (
     <th
       className={cn(
-        'px-4 py-3 text-left text-2xs font-bold uppercase tracking-wider whitespace-nowrap',
+        'whitespace-nowrap px-4 py-3 text-left text-xs font-semibold tracking-wide',
         className,
       )}
     >
@@ -36,7 +36,7 @@ export function TH({ children, className }: { children: ReactNode; className?: s
 }
 
 export function TBody({ children }: { children: ReactNode }) {
-  return <tbody className="divide-y-2 divide-ink-100">{children}</tbody>;
+  return <tbody className="divide-y divide-paper-300">{children}</tbody>;
 }
 
 export function TR({ children, className, onClick }: { children: ReactNode; className?: string; onClick?: () => void }) {

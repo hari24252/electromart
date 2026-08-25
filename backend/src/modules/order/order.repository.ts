@@ -22,7 +22,7 @@ export const orderRepository = {
       $set: { status: 'cancelled', cancelledAt: new Date() },
       $push: { statusHistory: { status: 'cancelled', changedBy: 'user', changedAt: new Date(), ...(note ? { note } : {}) } },
     } as any,
-    { new: true, includeResultMetadata: false } as any,
+    { returnDocument: 'after', includeResultMetadata: false } as any,
   ),
   advanceStatus: async (id: string, from: string, status: 'processing' | 'shipped' | 'delivered', note?: string): Promise<any> => Order.findOneAndUpdate(
     { _id: id, status: from } as any,
@@ -30,7 +30,7 @@ export const orderRepository = {
       $set: { status },
       $push: { statusHistory: { status, changedBy: 'admin', changedAt: new Date(), ...(note ? { note } : {}) } },
     } as any,
-    { new: true, includeResultMetadata: false } as any,
+    { returnDocument: 'after', includeResultMetadata: false } as any,
   ),
   findAll: (filter: Record<string, unknown>, page: number, limit: number) => Promise.all([
     Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).populate('user', 'name email phone').lean(),

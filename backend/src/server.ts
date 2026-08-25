@@ -4,9 +4,11 @@ import { closeCache } from './services/cache.service.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { closeQueues } from './jobs/email.queue.js';
+import { seedDemoCatalog } from './scripts/seedDemoCatalog.js';
 
 async function bootstrap(): Promise<void> {
   await connectDatabase();
+  if (env.SEED_DEMO_CATALOG) await seedDemoCatalog();
   const server = app.listen(env.PORT, () => logger.info({ port: env.PORT, environment: env.NODE_ENV }, 'ElectroMart API listening'));
   server.requestTimeout = 30_000;
   server.keepAliveTimeout = 65_000;

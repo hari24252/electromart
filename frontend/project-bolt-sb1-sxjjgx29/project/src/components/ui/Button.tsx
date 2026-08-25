@@ -17,8 +17,8 @@ const variantClasses: Record<Variant, string> = {
   accent: 'bg-accent-400 text-ink-900 hover:bg-accent-500 active:bg-accent-600',
   success: 'bg-success-500 text-white hover:bg-success-600 active:bg-success-700',
   danger: 'bg-danger-500 text-white hover:bg-danger-600 active:bg-danger-700',
-  outline: 'bg-white text-ink-900 hover:bg-paper-200 active:bg-paper-300',
-  ghost: 'bg-transparent text-ink-700 border-transparent shadow-none hover:bg-paper-200',
+  outline: 'border-paper-400 bg-white text-ink-900 hover:border-ink-300 hover:bg-paper-100',
+  ghost: 'border-transparent bg-transparent text-ink-700 shadow-none hover:bg-paper-100',
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -36,11 +36,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 brutal-border font-semibold uppercase tracking-wide',
-          'transition-all duration-150 ease-brutal shadow-brutal',
-          'hover:shadow-brutal-hover hover:translate-x-[2px] hover:translate-y-[2px]',
-          'active:shadow-brutal-press active:translate-x-[3px] active:translate-y-[3px]',
-          'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-brutal disabled:hover:translate-x-0 disabled:hover:translate-y-0',
+          'inline-flex items-center justify-center gap-2 rounded-lg border border-transparent font-medium shadow-sm',
+          'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-100',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           variantClasses[variant],
           sizeClasses[size],
           fullWidth && 'w-full',

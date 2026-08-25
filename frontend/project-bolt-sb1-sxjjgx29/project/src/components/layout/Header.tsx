@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Heart, ShoppingBag, Scale, Flame } from 'lucide-react';
+import { Menu, X, Heart, ShoppingBag, Scale } from 'lucide-react';
 import { Logo } from './Logo';
 import { SearchBar } from './SearchBar';
 import { CategoryNav } from './CategoryNav';
@@ -24,34 +24,18 @@ export function Header() {
 
   return (
     <>
-      {/* Announcement Marquee Bar */}
-      <div className="bg-gradient-to-r from-brand-900 via-slate-900 to-indigo-950 text-white py-1.5 border-b border-slate-800 overflow-hidden text-xs">
-        <div className="flex animate-marquee whitespace-nowrap">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex items-center gap-8 px-4 font-mono font-medium tracking-wide text-slate-300">
-              <span className="flex items-center gap-1.5 text-brand-400 font-semibold">
-                <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" /> Free Express Shipping on orders over $150
-              </span>
-              <span>•</span>
-              <span>Next-Day Tech Delivery Available</span>
-              <span>•</span>
-              <span className="text-amber-300 font-bold">Use code NEXTGEN10 for 10% Instant Discount</span>
-              <span>•</span>
-              <span>2-Year Full Hardware Warranty Included</span>
-              <span>•</span>
-            </div>
-          ))}
+      <div className="border-b border-paper-300 bg-paper-200 text-center text-xs font-medium text-ink-700">
+        <div className="mx-auto max-w-7xl px-4 py-2">
+          Free delivery on orders over ₹999 <span className="mx-2 text-paper-400">·</span> Easy returns within 7 days
         </div>
       </div>
 
-      {/* Main Glass Header */}
-      <header className="glass-header shadow-glass">
+      <header className="glass-header">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Top Row */}
-          <div className="flex items-center gap-4 py-3">
+          <div className="flex items-center gap-4 py-4">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="lg:hidden rounded-lg border border-paper-400 p-2 text-ink-700 hover:bg-paper-100"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -61,21 +45,19 @@ export function Header() {
             <SearchBar className="hidden md:block flex-1 max-w-xl" />
 
             <div className="flex items-center gap-3 ml-auto">
-              {/* Compare Button */}
               {compareCount > 0 && (
                 <button
                   onClick={() => setShowCompareModal(true)}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/40 text-xs font-semibold hover:bg-brand-600/30 transition-all"
+                  className="hidden sm:flex items-center gap-1.5 rounded-lg bg-teal-50 px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-100"
                 >
                   <Scale className="w-4 h-4" />
                   <span>Compare ({compareCount})</span>
                 </button>
               )}
 
-              {/* Wishlist Icon */}
               <Link
                 to="/wishlist"
-                className="relative p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-all"
+                className="relative rounded-lg border border-paper-400 p-2.5 text-ink-700 hover:border-brand-200 hover:text-brand-600"
                 title="Wishlist"
               >
                 <Heart className="w-5 h-5" />
@@ -86,14 +68,13 @@ export function Header() {
                 )}
               </Link>
 
-              {/* Cart Button */}
               <button
                 onClick={openCart}
-                className="glass-button px-4 py-2 text-xs font-semibold tracking-wide gap-2 shadow-lg shadow-brand-600/20"
+                className="glass-button rounded-lg px-4 py-2 text-xs tracking-wide"
               >
                 <ShoppingBag className="w-4 h-4" />
                 <span className="hidden sm:inline">CART</span>
-                <span className="w-5 h-5 bg-white text-brand-700 rounded-full font-extrabold text-[11px] flex items-center justify-center">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-brand-700">
                   {totalItems}
                 </span>
               </button>
@@ -102,41 +83,37 @@ export function Header() {
             </div>
           </div>
 
-          {/* Mobile Search Input */}
           <div className="md:hidden pb-3">
             <SearchBar />
           </div>
 
-          {/* Desktop Category Navigation */}
-          <div className="hidden lg:flex items-center border-t border-slate-800/80 -mx-4 px-4 bg-slate-950/40">
+          <div className="hidden lg:flex items-center border-t border-paper-300 -mx-4 px-4">
             <CategoryNav />
           </div>
         </div>
       </header>
 
-      {/* Compare Modal */}
       <ProductCompareModal isOpen={showCompareModal} onClose={() => setShowCompareModal(false)} />
 
-      {/* Mobile Navigation Drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] lg:hidden">
-          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-fade-in" onClick={() => setMobileOpen(false)} />
-          <div className="absolute top-0 left-0 bottom-0 w-80 max-w-[85vw] bg-slate-900 border-r border-slate-800 shadow-2xl animate-slide-in-left flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950/80">
+          <div className="absolute inset-0 bg-ink-900/20" onClick={() => setMobileOpen(false)} />
+          <div className="absolute top-0 left-0 bottom-0 flex w-80 max-w-[85vw] flex-col border-r border-paper-300 bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-paper-300 p-4">
               <Logo size="sm" />
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                className="rounded-lg p-2 text-ink-500 hover:bg-paper-100 hover:text-ink-900"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex-1 space-y-2 overflow-y-auto p-4">
               <Link
-                to="/catalog"
+                to="/"
                 onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 font-semibold text-sm rounded-xl bg-brand-600 text-white shadow-md mb-3"
+                className="mb-3 block rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white"
               >
                 Explore All Products
               </Link>
@@ -144,20 +121,20 @@ export function Header() {
               {tree.map((cat) => (
                 <div key={cat._id} className="space-y-1">
                   <Link
-                    to={`/catalog?category=${cat.slug}`}
+                    to={`/?category=${cat.slug}`}
                     onClick={() => setMobileOpen(false)}
-                    className="block px-3 py-2 font-bold text-xs uppercase tracking-wider text-brand-300"
+                    className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-brand-600"
                   >
                     {cat.name}
                   </Link>
                   {cat.children && cat.children.length > 0 && (
-                    <div className="pl-3 space-y-1 border-l border-slate-800">
+                    <div className="space-y-1 border-l border-paper-300 pl-3">
                       {cat.children.map((sub) => (
                         <Link
                           key={sub._id}
-                          to={`/catalog?category=${cat.slug}&subCategory=${sub.slug}`}
+                          to={`/?category=${cat.slug}&subCategory=${sub.slug}`}
                           onClick={() => setMobileOpen(false)}
-                          className="block px-3 py-1.5 text-xs text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-lg"
+                          className="block rounded-lg px-3 py-1.5 text-xs text-ink-600 hover:bg-paper-100 hover:text-ink-900"
                         >
                           {sub.name}
                         </Link>
@@ -168,12 +145,11 @@ export function Header() {
               ))}
             </div>
 
-            {/* Mobile Bottom Actions */}
-            <div className="border-t border-slate-800 p-4 flex gap-2">
+            <div className="flex gap-2 border-t border-paper-300 p-4">
               <Link
                 to="/wishlist"
                 onClick={() => setMobileOpen(false)}
-                className="flex-1 glass-button-secondary py-2.5 text-xs font-bold"
+                className="glass-button-secondary flex-1 py-2.5 text-xs"
               >
                 <Heart className="w-4 h-4 text-rose-400" />
                 Wishlist ({wishlistCount})
@@ -183,7 +159,7 @@ export function Header() {
                   setMobileOpen(false);
                   openCart();
                 }}
-                className="flex-1 glass-button py-2.5 text-xs font-bold"
+                className="glass-button flex-1 py-2.5 text-xs"
               >
                 <ShoppingBag className="w-4 h-4" />
                 Cart ({totalItems})
@@ -195,4 +171,3 @@ export function Header() {
     </>
   );
 }
-
