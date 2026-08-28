@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Tag, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
 
 interface CouponInputProps {
@@ -64,11 +62,6 @@ export function CouponInput({ onApply, appliedCode, discount, onRemove }: Coupon
         <Button size="md" onClick={handleApply}>Apply</Button>
       </div>
       {error && <p className="mt-1 text-xs text-danger-600 font-medium">{error}</p>}
-      <div className="flex flex-wrap gap-1.5 mt-2">
-        <Badge variant="outline" size="sm">WELCOME10</Badge>
-        <Badge variant="outline" size="sm">FLAT500</Badge>
-        <Badge variant="outline" size="sm">MONSOON25</Badge>
-      </div>
     </div>
   );
 }

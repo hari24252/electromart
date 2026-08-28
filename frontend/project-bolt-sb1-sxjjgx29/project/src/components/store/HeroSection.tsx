@@ -1,58 +1,81 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Truck } from 'lucide-react';
-import { useDataStore } from '@/stores/dataStore';
-import { ProductImagePlaceholder } from '@/components/common/ProductImagePlaceholder';
+import { ArrowRight, Truck, Sparkles, Zap, Percent, ShieldCheck } from 'lucide-react';
 
 export function HeroSection() {
-  const featured = useDataStore((state) => state.getFeaturedProducts());
-  const heroProduct = featured[0];
-  const category = !heroProduct
-    ? 'electronics'
-    : typeof heroProduct.category === 'string'
-      ? heroProduct.category
-      : heroProduct.category.name;
-
   return (
-    <section className="border-b border-paper-300 bg-paper-100">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:py-20">
-        <div className="max-w-xl">
-          <p className="mb-4 text-sm font-semibold text-brand-600">A simpler way to shop technology</p>
-          <h1 className="text-4xl font-bold tracking-[-0.04em] text-ink-900 sm:text-5xl lg:text-6xl">
-            Everyday tech, chosen well.
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-ink-600">
-            Thoughtful products for work, play, and home — with straightforward prices, clear details, and support when you need it.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/" className="glass-button rounded-lg px-5 py-3 text-sm">
-              Shop all products <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/?sort=popular" className="glass-button-secondary rounded-lg px-5 py-3 text-sm">
-              See current offers
-            </Link>
-          </div>
-          <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-ink-600">
-            <span className="flex items-center gap-2"><Truck className="h-4 w-4 text-teal-600" /> Free delivery over ₹999</span>
-            <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-teal-600" /> Genuine product warranty</span>
-          </div>
-        </div>
+    <section className="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900">
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+        <div className="grid gap-6 lg:grid-cols-[1fr_380px] items-center">
 
-        <div className="relative mx-auto w-full max-w-md rounded-3xl border border-paper-300 bg-white p-4 shadow-glass">
-          <div className="absolute right-5 top-5 rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-800">
-            Featured pick
-          </div>
-          <ProductImagePlaceholder
-            src={heroProduct?.images?.[0] || heroProduct?.thumbnail}
-            alt={heroProduct?.name || 'Featured ElectroMart product'}
-            category={category}
-            className="h-[330px] w-full rounded-2xl object-cover sm:h-[390px]"
-          />
-          {heroProduct && (
-            <div className="px-2 pb-2 pt-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-ink-500">{heroProduct.brand}</p>
-              <p className="mt-1 text-lg font-semibold text-ink-900">{heroProduct.name}</p>
+          {/* Left — main hero copy */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-ink-900 via-ink-800 to-brand-800 p-8 md:p-12 text-white border border-white/10">
+            <div className="absolute right-0 top-0 h-full w-2/5 bg-gradient-to-l from-brand-700/20 to-transparent pointer-events-none" />
+            <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-brand-600/10 blur-3xl pointer-events-none" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/20 border border-amber-400/30 px-3 py-1 mb-5">
+                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                <span className="text-xs font-bold text-amber-200 uppercase tracking-wider">Best Prices Guaranteed</span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl leading-[1.1] text-white">
+                Upgrade<br />
+                <span className="text-amber-300">Your Tech</span>
+              </h1>
+              <p className="mt-4 text-lg text-ink-200 max-w-xl">
+                Discover the latest smartphones, laptops and gadgets — all in one place with the best deals.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  to="/catalog"
+                  className="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-7 py-3.5 text-sm font-bold text-ink-900 hover:bg-amber-300 transition-colors shadow-lg"
+                >
+                  Shop Now <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/catalog?sort=newest"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+                >
+                  New Arrivals
+                </Link>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-6">
+                <div className="flex items-center gap-2 text-sm text-ink-300">
+                  <Percent className="h-4 w-4 text-amber-300 shrink-0" />
+                  <span>Up to 70% off</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-ink-300">
+                  <Truck className="h-4 w-4 text-teal-300 shrink-0" />
+                  <span>Free delivery above ₹999</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-ink-300">
+                  <ShieldCheck className="h-4 w-4 text-sky-300 shrink-0" />
+                  <span>Genuine warranty</span>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Right — category quick links */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: 'Smartphones', slug: 'smartphones', emoji: '📱', color: 'from-sky-500/20 to-sky-600/10 border-sky-500/20 hover:border-sky-400/40', text: 'text-sky-200' },
+              { label: 'Laptops', slug: 'laptops', emoji: '💻', color: 'from-violet-500/20 to-violet-600/10 border-violet-500/20 hover:border-violet-400/40', text: 'text-violet-200' },
+              { label: 'Audio', slug: 'audio', emoji: '🎧', color: 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/20 hover:border-emerald-400/40', text: 'text-emerald-200' },
+              { label: 'Gaming', slug: 'gaming', emoji: '🎮', color: 'from-rose-500/20 to-rose-600/10 border-rose-500/20 hover:border-rose-400/40', text: 'text-rose-200' },
+              { label: 'Wearables', slug: 'wearables', emoji: '⌚', color: 'from-teal-500/20 to-teal-600/10 border-teal-500/20 hover:border-teal-400/40', text: 'text-teal-200' },
+              { label: 'Cameras', slug: 'cameras', emoji: '📷', color: 'from-amber-500/20 to-amber-600/10 border-amber-500/20 hover:border-amber-400/40', text: 'text-amber-200' },
+            ].map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/catalog?category=${cat.slug}`}
+                className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${cat.color} p-4 text-left transition-all hover:scale-[1.02] hover:shadow-lg`}
+              >
+                <span className="text-2xl block mb-1.5">{cat.emoji}</span>
+                <p className={`text-sm font-bold ${cat.text}`}>{cat.label}</p>
+                <ArrowRight className="absolute bottom-3 right-3 h-3.5 w-3.5 text-white/30 group-hover:text-white/70 transition-colors" />
+              </Link>
+            ))}
+          </div>
+
         </div>
       </div>
     </section>

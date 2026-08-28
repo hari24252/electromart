@@ -1,15 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '@/api/services';
+import { getApiErrorMessage } from '@/api/client';
 import { useAuthStore } from './authStore';
 
 interface WishlistState {
   productIds: string[];
-  toggle: (productId: string) => void;
-  add: (productId: string) => void;
-  remove: (productId: string) => void;
+  lastError: string | null;
+  toggle: (productId: string) => Promise<void>;
+  add: (productId: string) => Promise<void>;
+  remove: (productId: string) => Promise<void>;
   has: (productId: string) => boolean;
   clear: () => void;
+  clearError: () => void;
   hydrate: () => Promise<void>;
 }
 
@@ -17,45 +20,51 @@ export const useWishlistStore = create<WishlistState>()(
   persist(
     (set, get) => ({
       productIds: [],
+      lastError: null,
 
-      toggle: (productId) =>
-        set((state) => {
-          const exists = state.productIds.includes(productId);
-          if (useAuthStore.getState().isAuthenticated) {
-            const request = exists ? api.wishlist.remove(productId) : api.wishlist.add(productId);
-            void request
-              .then((products) => {
-                if (products) set({ productIds: products.map((product) => product._id) });
-              })
-              .catch(() => undefined);
+      toggle: async (productId) => {
+        const productIds = get().productIds;
+        const exists = productIds.includes(productId);
+        set({ productIds: exists ? productIds.filter((id) => id !== productId) : [...productIds, productId], lastError: null });
+        if (!useAuthStore.getState().isAuthenticated) return;
+        try {
+          if (exists) {
+            await api.wishlist.remove(productId);
+          } else {
+            const products = await api.wishlist.add(productId);
+            set({ productIds: products.map((product) => product._id) });
           }
-          return {
-            productIds: exists
-              ? state.productIds.filter((id) => id !== productId)
-              : [...state.productIds, productId],
-          };
-        }),
+        } catch (error) {
+          set({ productIds, lastError: getApiErrorMessage(error, 'The wishlist could not be updated.') });
+          throw error;
+        }
+      },
 
-      add: (productId) =>
-        set((state) =>
-          state.productIds.includes(productId)
-            ? state
-            : { productIds: [...state.productIds, productId] },
-        ),
+      add: async (productId) => {
+        if (get().productIds.includes(productId)) return;
+        await get().toggle(productId);
+      },
 
-      remove: (productId) =>
-        set((state) => ({ productIds: state.productIds.filter((id) => id !== productId) })),
+      remove: async (productId) => {
+        if (!get().productIds.includes(productId)) return;
+        await get().toggle(productId);
+      },
 
       has: (productId) => get().productIds.includes(productId),
 
-      clear: () => set({ productIds: [] }),
+      clear: () => set({ productIds: [], lastError: null }),
+      clearError: () => set({ lastError: null }),
 
       hydrate: async () => {
         if (!useAuthStore.getState().isAuthenticated) return;
-        const products = await api.wishlist.list();
-        set({ productIds: products.map((product) => product._id) });
+        try {
+          const products = await api.wishlist.list();
+          set({ productIds: products.map((product) => product._id), lastError: null });
+        } catch (error) {
+          set({ lastError: getApiErrorMessage(error, 'Your wishlist could not be synchronized.') });
+        }
       },
     }),
-    { name: 'electromart-wishlist' },
+    { name: 'electromart-wishlist-v2', partialize: () => ({}) },
   ),
 );

@@ -4,7 +4,6 @@ import { ensureObjectId } from '../../utils/ids.js';
 import { slugifyName } from '../../utils/slug.js';
 import { resolveProductImageUrls } from '../../services/media.service.js';
 import { writeAdminAudit } from '../../services/audit.service.js';
-import { invalidateCache, readCache, writeCache } from '../../services/cache.service.js';
 import { productRepository } from './product.repository.js';
 
 type ProductInput = {
@@ -34,19 +33,10 @@ async function assertCategories(category: string, subCategories: string[] = []):
 }
 
 const salePrice = (product: { price: number; discountPrice?: number | null }): number => product.discountPrice ?? product.price;
-const productCacheKey = (scope: string, value: unknown): string => `products:${scope}:${JSON.stringify(value)}`;
-
-async function invalidateProductCache(): Promise<void> {
-  await invalidateCache('products:');
-}
-
 export const productService = {
   async list(query: Record<string, unknown>) {
     const page = Math.max(1, Number(query.page) || 1);
     const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
-    const cacheKey = productCacheKey('list', Object.entries(query).sort(([left], [right]) => left.localeCompare(right)));
-    const cached = await readCache<{ items: unknown[]; total: number; page: number; limit: number }>(cacheKey);
-    if (cached) return cached;
     const filter: Record<string, unknown> = { deletedAt: null, status: 'active' };
     if (typeof query.category === 'string') {
       const category = await productRepository.findCategoryBySlug(query.category);
@@ -73,7 +63,6 @@ export const productService = {
     const sort = sortBy[typeof query.sort === 'string' ? query.sort : 'newest'] ?? sortBy.newest!;
     const result = await productRepository.findWithFilters(filter, page, limit, sort);
     const response = { ...result, page, limit };
-    await writeCache(cacheKey, response);
     return response;
   },
 
@@ -106,22 +95,14 @@ export const productService = {
   },
 
   async detail(slug: string) {
-    const cacheKey = productCacheKey('detail', slug);
-    const cached = await readCache<unknown>(cacheKey);
-    if (cached) return cached;
     const product = await productRepository.findBySlug(slug);
     if (!product) throw notFound('Product');
-    await writeCache(cacheKey, product);
     return product;
   },
 
   async related(slug: string) {
-    const cacheKey = productCacheKey('related', slug);
-    const cached = await readCache<unknown[]>(cacheKey);
-    if (cached) return cached;
     const product = await this.detail(slug);
     const result = await productRepository.findWithFilters({ category: product.category, _id: { $ne: product._id }, deletedAt: null, status: 'active' }, 1, 8, { ratingsAvg: -1, soldCount: -1 });
-    await writeCache(cacheKey, result.items);
     return result.items;
   },
 
@@ -135,7 +116,6 @@ export const productService = {
     const product = await productRepository.create({ ...input, sku: input.sku.toUpperCase(), slug: await uniqueSlug(input.name), images, ...(thumbnail ? { thumbnail } : {}) });
     if (input.stock && input.stock > 0) await productRepository.createInventoryLog({ product: product.id, change: input.stock, previousStock: 0, resultingStock: input.stock, reason: 'restock', actor: adminId, reference: 'initial product stock' });
     await writeAdminAudit(adminId, 'product.create', 'product', product.id, { sku: product.sku, stock: product.stock });
-    await invalidateProductCache();
     return product;
   },
 
@@ -162,7 +142,6 @@ export const productService = {
     const product = await productRepository.update(productId, data);
     if (!product) throw notFound('Product');
     await writeAdminAudit(adminId, 'product.update', 'product', productId, input);
-    await invalidateProductCache();
     return product;
   },
 
@@ -170,7 +149,6 @@ export const productService = {
     const product = await productRepository.softDelete(ensureObjectId(id, 'product').toString());
     if (!product) throw notFound('Product');
     await writeAdminAudit(adminId, 'product.archive', 'product', product.id);
-    await invalidateProductCache();
   },
 
   async adjustStock(id: string, change: number, reason: 'restock' | 'correction', reference: string | undefined, adminId: string) {
@@ -180,7 +158,6 @@ export const productService = {
     const previousStock = product.stock - change;
     await productRepository.createInventoryLog({ product: productId, change, previousStock, resultingStock: product.stock, reason, ...(reference ? { reference } : {}), actor: adminId });
     await writeAdminAudit(adminId, 'inventory.adjust', 'product', productId, { change, reason, reference });
-    await invalidateProductCache();
     return product;
   },
 
@@ -193,7 +170,6 @@ export const productService = {
     const product = await productRepository.update(ensureObjectId(id, 'product').toString(), { status });
     if (!product) throw notFound('Product');
     await writeAdminAudit(adminId, 'product.status', 'product', product.id, { status });
-    await invalidateProductCache();
     return product;
   },
 
@@ -209,13 +185,11 @@ export const productService = {
     const updated = await productRepository.update(productId, { images, ...(thumbnail ? { thumbnail } : {}) });
     if (!updated) throw notFound('Product');
     await writeAdminAudit(adminId, replace ? 'product.images.replace' : 'product.images.add', 'product', productId, { imageCount: uploaded.length });
-    await invalidateProductCache();
     return updated;
   },
 
   async updateRatingAggregate(productId: string, ratingsAvg: number, ratingsCount: number) {
     await productRepository.updateRatingAggregate(productId, ratingsAvg, ratingsCount);
-    await invalidateProductCache();
   },
   async inventoryHistory(id: string) { const productId = ensureObjectId(id, 'product').toString(); return productRepository.inventoryHistory(productId, 100); },
   salePrice,

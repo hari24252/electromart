@@ -69,11 +69,11 @@ export function Footer() {
           <div>
             <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-brand-600">Shop</h4>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-sm text-ink-600 hover:text-brand-600">All Products</Link></li>
-              <li><Link to="/?search=smartphone" className="text-sm text-ink-600 hover:text-brand-600">Smartphones</Link></li>
-              <li><Link to="/?search=laptop" className="text-sm text-ink-600 hover:text-brand-600">Laptops</Link></li>
-              <li><Link to="/?search=audio" className="text-sm text-ink-600 hover:text-brand-600">Audio</Link></li>
-              <li><Link to="/?search=gaming" className="text-sm text-ink-600 hover:text-brand-600">Gaming</Link></li>
+              <li><Link to="/catalog" className="text-sm text-ink-600 hover:text-brand-600">All Products</Link></li>
+              <li><Link to="/catalog?search=smartphone" className="text-sm text-ink-600 hover:text-brand-600">Smartphones</Link></li>
+              <li><Link to="/catalog?search=laptop" className="text-sm text-ink-600 hover:text-brand-600">Laptops</Link></li>
+              <li><Link to="/catalog?search=audio" className="text-sm text-ink-600 hover:text-brand-600">Audio</Link></li>
+              <li><Link to="/catalog?search=gaming" className="text-sm text-ink-600 hover:text-brand-600">Gaming</Link></li>
             </ul>
           </div>
 

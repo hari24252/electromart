@@ -7,12 +7,11 @@ import { Category } from '../models/category.model.js';
 import { Coupon } from '../models/coupon.model.js';
 import { InventoryLog } from '../models/inventoryLog.model.js';
 import { Order } from '../models/order.model.js';
-import { Otp } from '../models/otp.model.js';
 import { Product } from '../models/product.model.js';
 import { Review } from '../models/review.model.js';
 import { User } from '../models/user.model.js';
 
-const models = [Admin, AuditLog, Cart, Category, Coupon, InventoryLog, Order, Otp, Product, Review, User];
+const models = [Admin, AuditLog, Cart, Category, Coupon, InventoryLog, Order, Product, Review, User];
 
 async function main(): Promise<void> {
   await connectDatabase();

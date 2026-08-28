@@ -32,7 +32,7 @@ export function SearchBar({ className }: { className?: string }) {
     e.preventDefault();
     if (query.trim()) {
       setFilters({ search: query.trim(), page: 1 });
-      navigate(`/?search=${encodeURIComponent(query.trim())}`);
+      navigate(`/catalog?search=${encodeURIComponent(query.trim())}`);
       setIsOpen(false);
     }
   };

@@ -13,7 +13,7 @@ interface CategoryCardProps {
 export function CategoryCard({ category, variant = 'default', className }: CategoryCardProps) {
   if (variant === 'wide') {
     return (
-      <Link to={`/?category=${category.slug}`} className={cn('group flex items-center gap-4 rounded-xl border border-paper-300 bg-white p-3 transition-all hover:border-paper-400 hover:shadow-glass', className)}>
+      <Link to={`/catalog?category=${category.slug}`} className={cn('group flex items-center gap-4 rounded-xl border border-paper-300 bg-white p-3 transition-all hover:border-paper-400 hover:shadow-glass', className)}>
         <ProductImagePlaceholder src={category.image} alt={category.name} category={category.name} className="h-20 w-20 rounded-xl object-cover" />
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-ink-900 group-hover:text-brand-600">{category.name}</h3>
@@ -25,7 +25,7 @@ export function CategoryCard({ category, variant = 'default', className }: Categ
   }
 
   return (
-    <Link to={`/?category=${category.slug}`} className={cn('group block overflow-hidden rounded-xl border border-paper-300 bg-white transition-all hover:border-paper-400 hover:shadow-glass', className)}>
+    <Link to={`/catalog?category=${category.slug}`} className={cn('group block overflow-hidden rounded-xl border border-paper-300 bg-white transition-all hover:border-paper-400 hover:shadow-glass', className)}>
       <ProductImagePlaceholder src={category.image} alt={category.name} category={category.name} className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
       <div className="flex items-center justify-between gap-2 p-3">
         <div className="min-w-0">

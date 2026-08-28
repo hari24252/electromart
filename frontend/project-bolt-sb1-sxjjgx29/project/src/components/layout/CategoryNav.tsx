@@ -30,7 +30,7 @@ export function CategoryNav() {
           onMouseLeave={() => setOpenMenu(null)}
         >
           <Link
-            to={`/?category=${cat.slug}`}
+            to={`/catalog?category=${cat.slug}`}
             className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-brand-600 whitespace-nowrap"
             onClick={() => setOpenMenu(null)}
           >
@@ -43,7 +43,7 @@ export function CategoryNav() {
               {cat.children.map((sub) => (
                 <Link
                   key={sub._id}
-                  to={`/?category=${cat.slug}&subCategory=${sub.slug}`}
+                  to={`/catalog?category=${cat.slug}&subCategory=${sub.slug}`}
                   className="block rounded-lg px-3 py-2.5 text-sm text-ink-600 transition-colors hover:bg-paper-100 hover:text-ink-900"
                 >
                   {sub.name}

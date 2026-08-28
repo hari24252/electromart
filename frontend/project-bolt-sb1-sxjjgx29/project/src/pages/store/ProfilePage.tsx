@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { useAuthStore } from '@/stores/authStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
+import { useCartStore } from '@/stores/cartStore';
 import { useToast } from '@/components/ui/Toast';
 import { formatDate } from '@/lib/utils';
 import { api } from '@/api/services';
@@ -16,6 +17,8 @@ import { getApiErrorMessage } from '@/api/client';
 export function ProfilePage() {
   const { user, logout, updateUser } = useAuthStore();
   const wishlistCount = useWishlistStore((s) => s.productIds.length);
+  const clearWishlist = useWishlistStore((s) => s.clear);
+  const resetCart = useCartStore((s) => s.reset);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -31,8 +34,11 @@ export function ProfilePage() {
     if (!user) return;
     void api.orders.mine(1, 1)
       .then((response) => setOrderCount(response.total))
-      .catch(() => setOrderCount(null));
-  }, [user?._id]);
+      .catch((error) => {
+        setOrderCount(null);
+        toast('error', getApiErrorMessage(error), 'Could not load your order count');
+      });
+  }, [toast, user?._id]);
 
   if (!user) {
     return (
@@ -61,8 +67,14 @@ export function ProfilePage() {
     }
   };
 
-  const handleLogout = () => {
-    void api.auth.logout().catch(() => undefined);
+  const handleLogout = async () => {
+    try {
+      await api.auth.logout();
+    } catch (error) {
+      toast('error', getApiErrorMessage(error), 'Signed out on this device only');
+    }
+    resetCart();
+    clearWishlist();
     logout();
     navigate('/');
   };
@@ -75,6 +87,8 @@ export function ProfilePage() {
     setSavingPassword(true);
     try {
       await api.auth.changePassword(passwords.current, passwords.next);
+      resetCart();
+      clearWishlist();
       logout();
       setPasswordModalOpen(false);
       toast('success', 'Password changed. Please sign in again.');

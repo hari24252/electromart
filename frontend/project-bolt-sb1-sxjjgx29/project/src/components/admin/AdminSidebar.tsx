@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { Logo } from '@/components/layout/Logo';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/api/services';
+import { getApiErrorMessage } from '@/api/client';
+import { useToast } from '@/components/ui/Toast';
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -24,10 +26,15 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const adminLogout = useAuthStore((state) => state.adminLogout);
+  const { toast } = useToast();
   const isActive = (href: string) => href === '/admin' ? location.pathname === href : location.pathname.startsWith(href);
 
-  const handleLogout = () => {
-    void api.adminAuth.logout().catch(() => undefined);
+  const handleLogout = async () => {
+    try {
+      await api.adminAuth.logout();
+    } catch (error) {
+      toast('error', getApiErrorMessage(error), 'Signed out on this device only');
+    }
     adminLogout();
     navigate('/admin/login');
   };

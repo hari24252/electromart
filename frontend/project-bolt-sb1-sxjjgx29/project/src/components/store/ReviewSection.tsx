@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ThumbsUp, BadgeCheck, Star, PenLine } from 'lucide-react';
+import { ThumbsUp, BadgeCheck, Star, PenLine, Pencil, Trash2 } from 'lucide-react';
 import type { Review } from '@/types';
 import { Rating } from '@/components/ui/Rating';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Input, Textarea } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useAuthStore } from '@/stores/authStore';
@@ -27,7 +28,9 @@ export function ReviewSection({ productId, reviews, ratingsAvg, ratingsCount }: 
   const [helpful, setHelpful] = useState<Set<string>>(new Set());
   const [localReviews, setLocalReviews] = useState(reviews);
   const [submitting, setSubmitting] = useState(false);
-  const { isAuthenticated } = useAuthStore();
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
+  const { isAuthenticated, user } = useAuthStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -56,17 +59,42 @@ export function ReviewSection({ productId, reviews, ratingsAvg, ratingsCount }: 
     }
     setSubmitting(true);
     try {
-      const review = await api.reviews.create(productId, { rating, ...(title.trim() ? { title: title.trim() } : {}), comment: comment.trim() });
-      setLocalReviews((current) => [review, ...current.filter((item) => item._id !== review._id)]);
+      const payload = { rating, ...(title.trim() ? { title: title.trim() } : {}), comment: comment.trim() };
+      const review = editingReview
+        ? await api.reviews.update(editingReview._id, payload)
+        : await api.reviews.create(productId, payload);
+      setLocalReviews((current) => editingReview
+        ? current.map((item) => item._id === review._id ? review : item)
+        : [review, ...current.filter((item) => item._id !== review._id)]);
       setIsWriting(false);
+      setEditingReview(null);
       setTitle('');
       setComment('');
       setRating(5);
-      toast('success', 'Your review was submitted for moderation.');
+      toast('success', editingReview ? 'Your review was updated.' : 'Your review was submitted for moderation.');
     } catch (error) {
       toast('error', getApiErrorMessage(error), 'Could not submit review');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const startEditing = (review: Review) => {
+    setEditingReview(review);
+    setRating(review.rating);
+    setTitle(review.title ?? '');
+    setComment(review.comment);
+    setIsWriting(true);
+  };
+
+  const deleteReview = async () => {
+    if (!reviewToDelete) return;
+    try {
+      await api.reviews.remove(reviewToDelete._id);
+      setLocalReviews((current) => current.filter((review) => review._id !== reviewToDelete._id));
+      toast('success', 'Your review was deleted.');
+    } catch (error) {
+      toast('error', getApiErrorMessage(error), 'Could not delete review');
     }
   };
 
@@ -142,6 +170,12 @@ export function ReviewSection({ productId, reviews, ratingsAvg, ratingsCount }: 
                     >
                       <ThumbsUp className="w-3.5 h-3.5" /> Helpful
                     </button>
+                    {user?._id === review.user && (
+                      <>
+                        <button onClick={() => startEditing(review)} className="flex items-center gap-1 text-xs font-semibold text-ink-500 transition-colors hover:text-ink-900"><Pencil className="w-3.5 h-3.5" /> Edit</button>
+                        <button onClick={() => setReviewToDelete(review)} className="flex items-center gap-1 text-xs font-semibold text-danger-600 transition-colors hover:text-danger-700"><Trash2 className="w-3.5 h-3.5" /> Delete</button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -151,7 +185,7 @@ export function ReviewSection({ productId, reviews, ratingsAvg, ratingsCount }: 
       </div>
 
       {/* Write review modal */}
-      <Modal isOpen={isWriting} onClose={() => setIsWriting(false)} title="Write a Review" size="md">
+      <Modal isOpen={isWriting} onClose={() => { setIsWriting(false); setEditingReview(null); }} title={editingReview ? 'Edit Your Review' : 'Write a Review'} size="md">
         <div className="p-6 space-y-4">
           <div>
             <label className="brutal-label">Rating</label>
@@ -171,11 +205,19 @@ export function ReviewSection({ productId, reviews, ratingsAvg, ratingsCount }: 
           <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Summarize your experience" />
           <Textarea label="Review" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Tell others what you think about this product" rows={5} />
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setIsWriting(false)}>Cancel</Button>
-            <Button onClick={handleSubmit} loading={submitting}>Submit Review</Button>
+            <Button variant="outline" onClick={() => { setIsWriting(false); setEditingReview(null); }}>Cancel</Button>
+            <Button onClick={handleSubmit} loading={submitting}>{editingReview ? 'Save Review' : 'Submit Review'}</Button>
           </div>
         </div>
       </Modal>
+      <ConfirmDialog
+        isOpen={Boolean(reviewToDelete)}
+        onClose={() => setReviewToDelete(null)}
+        onConfirm={() => { void deleteReview(); }}
+        title="Delete review?"
+        message="This action cannot be undone."
+        confirmLabel="Delete review"
+      />
     </div>
   );
 }

@@ -6,9 +6,10 @@ import { useCartStore } from '@/stores/cartStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatCurrency } from '@/lib/utils';
 import { MediaImage } from '@/components/ui/MediaImage';
+import { Alert } from '@/components/ui/Alert';
 
 export function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, clearCart } = useCartStore();
+  const { items, isOpen, closeCart, removeItem, updateQuantity, clearCart, lastError, clearError } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
@@ -33,13 +34,14 @@ export function CartDrawer() {
           </div>
           <p className="mb-2 text-lg font-semibold tracking-tight">Cart is empty</p>
           <p className="text-sm text-ink-500 mb-6">Add some products to get started</p>
-          <Button onClick={() => { closeCart(); navigate('/'); }}>
+          <Button onClick={() => { closeCart(); navigate('/catalog'); }}>
             Browse Products
           </Button>
         </div>
       ) : (
         <>
           <div className="p-4 space-y-3">
+            {lastError && <Alert variant="error" title="Cart not synchronized" onClose={clearError}>{lastError}</Alert>}
             {items.map((item) => (
               <div key={item.productId} className="flex gap-3 rounded-xl border border-paper-300 bg-white p-3">
                 <Link to={`/product/${item.slug}`} onClick={closeCart} className="flex-shrink-0">
@@ -88,7 +90,7 @@ export function CartDrawer() {
 
             <button
               onClick={clearCart}
-            className="w-full py-2 text-sm font-medium text-danger-600 hover:text-danger-700"
+              className="w-full py-2 text-sm font-medium text-danger-600 hover:text-danger-700"
             >
               Clear Cart
             </button>

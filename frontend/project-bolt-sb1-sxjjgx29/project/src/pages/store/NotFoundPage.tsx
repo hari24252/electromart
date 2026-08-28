@@ -14,7 +14,7 @@ export function NotFoundPage() {
       </p>
       <div className="flex gap-2">
         <Link to="/"><Button variant="outline">Go Home</Button></Link>
-        <Link to="/"><Button>Browse Products</Button></Link>
+        <Link to="/catalog"><Button>Browse Products</Button></Link>
       </div>
     </div>
   );

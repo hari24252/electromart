@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+
+# Environment files — never commit real secrets
+.env
+**/.env
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Uploads (use Cloudinary in production)
+backend/public/uploads/products/*
+!backend/public/uploads/products/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# pnpm workspace state
+**/node_modules/.modules.yaml
+**/node_modules/.package-map.json
+**/node_modules/.pnpm-workspace-state-v1.json
+**/node_modules/.pnpm/
+**/node_modules/.ignored_react/
+**/node_modules/.ignored_react-dom/

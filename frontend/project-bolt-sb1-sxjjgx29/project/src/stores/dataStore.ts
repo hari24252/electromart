@@ -1,10 +1,7 @@
 import { create } from 'zustand';
 import type { Product, Category, ProductFilters } from '@/types';
-import {
-  mockProducts,
-  mockCategories,
-} from '@/lib/mockData';
 import { api } from '@/api/services';
+import { getApiErrorMessage } from '@/api/client';
 
 interface DataState {
   products: Product[];
@@ -12,7 +9,7 @@ interface DataState {
   filters: ProductFilters;
   compareProducts: Product[];
   isLoading: boolean;
-  isUsingMockData: boolean;
+  error: string | null;
   total: number;
   totalPages: number;
   loadCatalogue: () => Promise<void>;
@@ -52,14 +49,14 @@ function flattenCategories(categories: Category[]): Category[] {
 }
 
 export const useDataStore = create<DataState>((set, get) => ({
-  products: mockProducts,
-  categories: mockCategories,
+  products: [],
+  categories: [],
   filters: { ...defaultFilters },
   compareProducts: [],
   isLoading: false,
-  isUsingMockData: true,
-  total: mockProducts.length,
-  totalPages: Math.ceil(mockProducts.length / (defaultFilters.limit ?? 12)),
+  error: null,
+  total: 0,
+  totalPages: 1,
 
   toggleCompare: (product) => {
     const current = get().compareProducts;
@@ -77,7 +74,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   isInCompare: (productId) => get().compareProducts.some((p) => p._id === productId),
 
   loadCatalogue: async () => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const [categories, products] = await Promise.all([
         api.catalogue.categories(),
@@ -89,23 +86,23 @@ export const useDataStore = create<DataState>((set, get) => ({
         total: products.total,
         totalPages: products.totalPages,
         isLoading: false,
-        isUsingMockData: false,
+        error: null,
       });
-    } catch {
+    } catch (error) {
       set({
-        categories: mockCategories,
-        products: mockProducts,
-        total: mockProducts.length,
-        totalPages: Math.ceil(mockProducts.length / (defaultFilters.limit ?? 12)),
+        categories: [],
+        products: [],
+        total: 0,
+        totalPages: 1,
         isLoading: false,
-        isUsingMockData: true,
+        error: getApiErrorMessage(error, 'The catalogue could not be loaded. Please try again.'),
       });
     }
   },
 
   loadProducts: async (filters) => {
     const requestedFilters = { ...get().filters, ...filters };
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const result = await api.catalogue.products(requestedFilters);
       set({
@@ -113,10 +110,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         total: result.total,
         totalPages: result.totalPages,
         isLoading: false,
-        isUsingMockData: false,
+        error: null,
       });
-    } catch {
-      set({ isLoading: false, isUsingMockData: true });
+    } catch (error) {
+      set({
+        products: [],
+        total: 0,
+        totalPages: 1,
+        isLoading: false,
+        error: getApiErrorMessage(error, 'Products could not be loaded. Please try again.'),
+      });
     }
   },
 
@@ -128,79 +131,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   resetFilters: () => set({ filters: { ...defaultFilters } }),
 
   getFilteredProducts: () => {
-    const { products, filters } = get();
-    if (!get().isUsingMockData) {
-      return { products, total: get().total, totalPages: get().totalPages };
-    }
-    let filtered = [...products];
-
-    if (filters.category) {
-      const categoryId = get().categories.find((category) => category.slug === filters.category)?._id ?? filters.category;
-      filtered = filtered.filter((product) => product.category === categoryId);
-    }
-    if (filters.subCategory) {
-      const subCategoryId = get().categories.find((category) => category.slug === filters.subCategory)?._id ?? filters.subCategory;
-      filtered = filtered.filter((product) => product.subCategories?.includes(subCategoryId));
-    }
-    if (filters.brand) {
-      filtered = filtered.filter((p) => p.brand === filters.brand);
-    }
-    if (filters.minPrice !== undefined) {
-      filtered = filtered.filter((p) => {
-        const price = p.discountPrice && p.discountPrice < p.price ? p.discountPrice : p.price;
-        return price >= filters.minPrice!;
-      });
-    }
-    if (filters.maxPrice !== undefined) {
-      filtered = filtered.filter((p) => {
-        const price = p.discountPrice && p.discountPrice < p.price ? p.discountPrice : p.price;
-        return price <= filters.maxPrice!;
-      });
-    }
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.shortDescription.toLowerCase().includes(q),
-      );
-    }
-
-    filtered = filtered.filter((p) => p.status === 'active');
-
-    switch (filters.sort) {
-      case 'price-low':
-      case 'price_asc':
-        filtered.sort((a, b) => (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price));
-        break;
-      case 'price-high':
-      case 'price_desc':
-        filtered.sort((a, b) => (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price));
-        break;
-      case 'rating':
-        filtered.sort((a, b) => (b.ratingsAvg ?? 0) - (a.ratingsAvg ?? 0));
-        break;
-      case 'discount':
-      case 'popular':
-        filtered.sort(
-          (a, b) =>
-            ((b.price - (b.discountPrice ?? b.price)) / b.price) -
-            ((a.price - (a.discountPrice ?? a.price)) / a.price),
-        );
-        break;
-      default:
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }
-
-    const total = filtered.length;
-    const limit = filters.limit ?? 12;
-    const totalPages = Math.ceil(total / limit);
-    const page = filters.page ?? 1;
-    const startIdx = (page - 1) * limit;
-    const paginated = filtered.slice(startIdx, startIdx + limit);
-
-    return { products: paginated, total, totalPages };
+    return { products: get().products, total: get().total, totalPages: get().totalPages };
   },
 
   getProductBySlug: (slug) => get().products.find((p) => p.slug === slug),
@@ -228,8 +159,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   },
 
   getFeaturedProducts: () => {
-    const featured = get().products.filter((p) => p.isFeatured && p.status === 'active').slice(0, 8);
-    return featured.length > 0 ? featured : get().products.filter((p) => p.status === 'active').slice(0, 8);
+    return get().products.filter((p) => p.isFeatured && p.status === 'active').slice(0, 8);
   },
 
   getBrands: () => [...new Set(get().products.map((p) => p.brand))].sort(),

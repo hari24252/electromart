@@ -7,15 +7,20 @@ import { Admin } from '../models/admin.model.js';
 let mongodInstance: any = null;
 
 async function ensureInitialAdmin(): Promise<void> {
-  const email = env.INITIAL_ADMIN_EMAIL.toLowerCase();
+  const { INITIAL_ADMIN_EMAIL: initialAdminEmail, INITIAL_ADMIN_NAME: initialAdminName, INITIAL_ADMIN_PASSWORD: initialAdminPassword } = env;
+  if (!initialAdminEmail || !initialAdminName || !initialAdminPassword) {
+    logger.warn('Initial administrator bootstrap is not configured; skipping automatic administrator creation');
+    return;
+  }
+  const email = initialAdminEmail.toLowerCase();
   const existing = await Admin.exists({ email });
   if (existing) return;
 
   try {
     await Admin.create({
-      name: env.INITIAL_ADMIN_NAME,
+      name: initialAdminName,
       email,
-      passwordHash: await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 12),
+      passwordHash: await bcrypt.hash(initialAdminPassword, 12),
       role: 'admin',
     });
     logger.info({ email }, 'Initial administrator created');
@@ -28,8 +33,11 @@ async function ensureInitialAdmin(): Promise<void> {
 export async function connectDatabase(): Promise<void> {
   mongoose.set('strictQuery', true);
   mongoose.set('autoIndex', env.NODE_ENV !== 'production');
+  const connOpts = env.NODE_ENV === 'production'
+    ? { serverSelectionTimeoutMS: 10000, connectTimeoutMS: 10000, socketTimeoutMS: 45000, maxPoolSize: 100 }
+    : { serverSelectionTimeoutMS: 2000 };
   try {
-    await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 2000 });
+    await mongoose.connect(env.MONGODB_URI, connOpts);
     logger.info({ database: mongoose.connection.name }, 'MongoDB connected');
     await ensureInitialAdmin();
   } catch (error) {

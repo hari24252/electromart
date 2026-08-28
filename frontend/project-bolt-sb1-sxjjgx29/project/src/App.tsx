@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
@@ -16,6 +16,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { useDataStore } from '@/stores/dataStore';
 import { useWishlistStore } from '@/stores/wishlistStore';
 
+const HomePage = lazy(() => import('@/pages/store/HomePage').then((module) => ({ default: module.HomePage })));
 const CatalogPage = lazy(() => import('@/pages/store/CatalogPage').then((module) => ({ default: module.CatalogPage })));
 const ProductDetailPage = lazy(() => import('@/pages/store/ProductDetailPage').then((module) => ({ default: module.ProductDetailPage })));
 const CartPage = lazy(() => import('@/pages/store/CartPage').then((module) => ({ default: module.CartPage })));
@@ -24,7 +25,6 @@ const OrdersPage = lazy(() => import('@/pages/store/OrdersPage').then((module) =
 const OrderDetailPage = lazy(() => import('@/pages/store/OrderDetailPage').then((module) => ({ default: module.OrderDetailPage })));
 const LoginPage = lazy(() => import('@/pages/store/LoginPage').then((module) => ({ default: module.LoginPage })));
 const SignupPage = lazy(() => import('@/pages/store/SignupPage').then((module) => ({ default: module.SignupPage })));
-const ForgotPasswordPage = lazy(() => import('@/pages/store/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
 const ProfilePage = lazy(() => import('@/pages/store/ProfilePage').then((module) => ({ default: module.ProfilePage })));
 const AddressesPage = lazy(() => import('@/pages/store/AddressesPage').then((module) => ({ default: module.AddressesPage })));
 const WishlistPage = lazy(() => import('@/pages/store/WishlistPage').then((module) => ({ default: module.WishlistPage })));
@@ -43,6 +43,11 @@ const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage').t
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
+    const cleanPath = pathname.replace(/[.,;:'"!@#$%^&*()_+=\[\]{}<>?\\|`~]+$/g, '').replace(/\/+$/g, '/');
+    if (cleanPath !== pathname) {
+      const newUrl = cleanPath + window.location.search + window.location.hash;
+      window.history.replaceState(null, '', newUrl);
+    }
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
@@ -61,17 +66,15 @@ function StorefrontLayout({ children }: { children: ReactNode }) {
   );
 }
 
-function LegacyCatalogueRedirect() {
-  const location = useLocation();
-  return <Navigate replace to={`/${location.search}`} />;
-}
-
 function StoreRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
-      <Route path="/catalog" element={<LegacyCatalogueRedirect />} />
-      <Route path="/products" element={<LegacyCatalogueRedirect />} />
+      <Route path="/," element={<Navigate to="/" replace />} />
+      <Route path="/,/" element={<Navigate to="/" replace />} />
+      <Route path="/." element={<Navigate to="/" replace />} />
+      <Route path="/" element={<StorefrontLayout><HomePage /></StorefrontLayout>} />
+      <Route path="/catalog" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
+      <Route path="/products" element={<StorefrontLayout><CatalogPage /></StorefrontLayout>} />
       <Route path="/product/:slug" element={<StorefrontLayout><ProductDetailPage /></StorefrontLayout>} />
       <Route path="/cart" element={<StorefrontLayout><CartPage /></StorefrontLayout>} />
       <Route path="/checkout" element={<ProtectedRoute><StorefrontLayout><CheckoutPage /></StorefrontLayout></ProtectedRoute>} />
@@ -82,8 +85,6 @@ function StoreRoutes() {
       <Route path="/addresses" element={<ProtectedRoute><StorefrontLayout><AddressesPage /></StorefrontLayout></ProtectedRoute>} />
       <Route path="/login" element={<StorefrontLayout><LoginPage /></StorefrontLayout>} />
       <Route path="/signup" element={<StorefrontLayout><SignupPage /></StorefrontLayout>} />
-      <Route path="/forgot-password" element={<StorefrontLayout><ForgotPasswordPage /></StorefrontLayout>} />
-      <Route path="/reset-password" element={<StorefrontLayout><ForgotPasswordPage /></StorefrontLayout>} />
       <Route path="*" element={<StorefrontLayout><NotFoundPage /></StorefrontLayout>} />
     </Routes>
   );
@@ -92,8 +93,8 @@ function StoreRoutes() {
 function AdminRoutes() {
   return (
     <Routes>
-      <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+      <Route path="login" element={<AdminLoginPage />} />
+      <Route path="/" element={<AdminRoute><AdminLayout /></AdminRoute>}>
         <Route index element={<DashboardPage />} />
         <Route path="products" element={<AdminProductsPage />} />
         <Route path="products/new" element={<ProductFormPage />} />
@@ -133,7 +134,7 @@ function AppBootstrap() {
 }
 
 function RouteFallback() {
-  return <div className="grid min-h-[45vh] place-items-center text-sm font-bold uppercase text-ink-400">Loading Electromart…</div>;
+  return <div className="grid min-h-[45vh] place-items-center text-sm font-bold uppercase text-ink-400">Loading store…</div>;
 }
 
 export default function App() {

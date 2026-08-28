@@ -8,6 +8,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState } from '@/components/ui/Misc';
 import { SkeletonLoader } from '@/components/common/SkeletonLoader';
 import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
 import { useDataStore } from '@/stores/dataStore';
 
 const sortableValues = new Set(['newest', 'price_asc', 'price_desc', 'rating', 'popular']);
@@ -15,7 +16,7 @@ const sortableValues = new Set(['newest', 'price_asc', 'price_desc', 'rating', '
 export function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const { getFilteredProducts, filters, setFilters, categories, loadProducts, isLoading } = useDataStore();
+  const { getFilteredProducts, filters, setFilters, categories, loadProducts, isLoading, error } = useDataStore();
 
   useEffect(() => {
     const requestedSort = searchParams.get('sort');
@@ -79,11 +80,11 @@ export function CatalogPage() {
 
           {topCategories.length > 0 && (
             <div className="mt-8 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              <Link to="/" className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${!filters.category ? 'border-ink-900 bg-ink-900 text-white' : 'border-paper-400 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900'}`}>All products</Link>
+              <Link to="/catalog" className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${!filters.category ? 'border-ink-900 bg-ink-900 text-white' : 'border-paper-400 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900'}`}>All products</Link>
               {topCategories.map((category) => (
                 <Link
                   key={category._id}
-                  to={`/?category=${category.slug}`}
+                  to={`/catalog?category=${category.slug}`}
                   className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filters.category === category.slug ? 'border-ink-900 bg-ink-900 text-white' : 'border-paper-400 bg-white text-ink-600 hover:border-ink-300 hover:text-ink-900'}`}
                 >
                   {category.name}
@@ -145,6 +146,11 @@ export function CatalogPage() {
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, index) => <SkeletonLoader key={index} variant="product" />)}
               </div>
+            ) : error ? (
+              <Alert variant="error" title="Catalogue unavailable">
+                <p>{error}</p>
+                <Button className="mt-3" size="sm" onClick={() => void loadProducts(filters)}>Try again</Button>
+              </Alert>
             ) : products.length === 0 ? (
               <EmptyState
                 icon={<Package className="h-12 w-12" />}

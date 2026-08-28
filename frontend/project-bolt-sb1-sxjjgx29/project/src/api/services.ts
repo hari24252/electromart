@@ -340,13 +340,8 @@ function productFormData(draft: ProductDraft | ProductUpdateDraft, files: File[]
 
 export const api = {
   auth: {
-    signup: (payload: { name: string; email?: string; phone?: string; password: string }) => request({ method: 'POST', url: '/auth/signup', data: payload }, normalizeUser),
-    sendOtp: (identifier: string, purpose: 'signup' | 'login' | 'reset') => request({ method: 'POST', url: '/auth/send-otp', data: { identifier, purpose } }, () => undefined),
-    verifyOtp: (identifier: string, purpose: 'signup' | 'login' | 'reset', otp: string) => request({ method: 'POST', url: '/auth/verify-otp', data: { identifier, purpose, otp } }, (value) => value),
-    login: (identifier: string, password: string) => request({ method: 'POST', url: '/auth/login', data: { identifier, password } }, () => undefined),
-    verifyLoginOtp: (identifier: string, otp: string) => request({ method: 'POST', url: '/auth/verify-login-otp', data: { identifier, purpose: 'login', otp } }, (value) => value as { accessToken: string }),
-    forgotPassword: (identifier: string) => request({ method: 'POST', url: '/auth/forgot-password', data: { identifier } }, () => undefined),
-    resetPassword: (identifier: string, password: string) => request({ method: 'POST', url: '/auth/reset-password', data: { identifier, password } }, () => undefined),
+    signup: (payload: { name: string; email?: string; phone?: string; password: string }) => request({ method: 'POST', url: '/auth/signup', data: payload }, (value) => value as { accessToken: string }),
+    login: (identifier: string, password: string) => request({ method: 'POST', url: '/auth/login', data: { identifier, password } }, (value) => value as { accessToken: string }),
     me: (options: Pick<ScopedRequestConfig, 'suppressAuthRedirect'> = {}) => request({ method: 'GET', url: '/auth/me', authScope: 'user', ...options }, normalizeUser),
     updateProfile: (name: string) => request({ method: 'PATCH', url: '/auth/me', data: { name }, authScope: 'user' }, normalizeUser),
     logout: () => request({ method: 'POST', url: '/auth/logout' }, () => undefined),
@@ -402,8 +397,8 @@ export const api = {
     list: (productId: string) => request({ method: 'GET', url: `/reviews/product/${productId}` }, (value) => listValue(value).map(normalizeReview)),
     create: (productId: string, payload: { rating: number; title?: string; comment: string }) => request({ method: 'POST', url: `/reviews/product/${productId}`, data: payload }, normalizeReview),
     update: (id: string, payload: Partial<{ rating: number; title: string; comment: string }>) => request({ method: 'PUT', url: `/reviews/${id}`, data: payload }, normalizeReview),
-    remove: (id: string) => request({ method: 'DELETE', url: `/reviews/${id}` }, () => undefined),
-    moderate: (id: string, isApproved: boolean) => request({ method: 'PATCH', url: `/reviews/${id}/moderate`, data: { isApproved } }, normalizeReview),
+    remove: (id: string, authScope: 'user' | 'admin' = 'user') => request({ method: 'DELETE', url: `/reviews/${id}`, authScope }, () => undefined),
+    moderate: (id: string, isApproved: boolean) => request({ method: 'PATCH', url: `/reviews/${id}/moderate`, data: { isApproved }, authScope: 'admin' }, normalizeReview),
   },
   coupons: {
     apply: (code: string) => request({ method: 'POST', url: '/coupons/apply', data: { code } }, (value) => {

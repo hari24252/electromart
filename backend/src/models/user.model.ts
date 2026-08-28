@@ -18,12 +18,11 @@ const userSchema = new Schema({
   email: { type: String, trim: true, lowercase: true, unique: true, sparse: true, match: /^\S+@\S+\.\S+$/ },
   phone: { type: String, trim: true, unique: true, sparse: true, match: /^[0-9+\-() ]{7,20}$/ },
   passwordHash: { type: String, required: true, select: false },
-  isVerified: { type: Boolean, default: false },
+  // Accounts are authenticated with their password at signup; no verification challenge is required.
+  isVerified: { type: Boolean, default: true },
   isActive: { type: Boolean, default: true },
   authVersion: { type: Number, default: 0 },
   refreshSessionId: { type: String, select: false },
-  resetVerifiedUntil: { type: Date, select: false },
-  loginVerifiedUntil: { type: Date, select: false },
   addresses: { type: [addressSchema], default: [] },
   wishlist: { type: [{ type: Schema.Types.ObjectId, ref: 'Product' }], default: [] },
   lastLoginAt: { type: Date },
@@ -36,8 +35,6 @@ const userSchema = new Schema({
       delete returned.passwordHash;
       delete returned.authVersion;
       delete returned.refreshSessionId;
-      delete returned.resetVerifiedUntil;
-      delete returned.loginVerifiedUntil;
       return returned;
     },
   },

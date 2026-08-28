@@ -1,18 +1,13 @@
 import { Router } from 'express';
 import { authenticateUser } from '../../middlewares/authenticateUser.js';
-import { authRateLimiter, otpRateLimiter } from '../../middlewares/rateLimiter.js';
+import { authRateLimiter } from '../../middlewares/rateLimiter.js';
 import { validateRequest } from '../../middlewares/validateRequest.js';
 import { userAuthController } from './userAuth.controller.js';
-import { changePasswordSchema, identifierSchema, loginSchema, resetPasswordSchema, sendOtpSchema, signupSchema, updateProfileSchema, verifyOtpSchema } from './userAuth.validation.js';
+import { changePasswordSchema, loginSchema, signupSchema, updateProfileSchema } from './userAuth.validation.js';
 
 export const userAuthRouter = Router();
 userAuthRouter.post('/signup', authRateLimiter, validateRequest(signupSchema), userAuthController.signup);
-userAuthRouter.post('/send-otp', otpRateLimiter, validateRequest(sendOtpSchema), userAuthController.sendOtp);
-userAuthRouter.post('/verify-otp', validateRequest(verifyOtpSchema), userAuthController.verifyOtp);
 userAuthRouter.post('/login', authRateLimiter, validateRequest(loginSchema), userAuthController.login);
-userAuthRouter.post('/verify-login-otp', validateRequest(verifyOtpSchema), userAuthController.verifyLoginOtp);
-userAuthRouter.post('/forgot-password', otpRateLimiter, validateRequest(identifierSchema), userAuthController.forgotPassword);
-userAuthRouter.post('/reset-password', validateRequest(resetPasswordSchema), userAuthController.resetPassword);
 userAuthRouter.post('/refresh-token', userAuthController.refreshToken);
 userAuthRouter.post('/logout', authenticateUser, userAuthController.logout);
 userAuthRouter.get('/me', authenticateUser, userAuthController.me);

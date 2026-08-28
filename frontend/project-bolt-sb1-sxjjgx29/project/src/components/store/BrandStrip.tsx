@@ -15,7 +15,7 @@ export function BrandStrip() {
           {topBrands.map((brand) => (
             <Link
               key={brand}
-              to={`/?brand=${brand}`}
+              to={`/catalog?brand=${brand}`}
               className="text-lg font-bold tracking-tight text-ink-700 hover:text-primary-600 transition-colors"
             >
               {brand}

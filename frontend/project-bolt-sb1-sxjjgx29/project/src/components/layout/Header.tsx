@@ -111,7 +111,7 @@ export function Header() {
 
             <div className="flex-1 space-y-2 overflow-y-auto p-4">
               <Link
-                to="/"
+                to="/catalog"
                 onClick={() => setMobileOpen(false)}
                 className="mb-3 block rounded-lg bg-brand-500 px-4 py-3 text-sm font-semibold text-white"
               >
@@ -121,7 +121,7 @@ export function Header() {
               {tree.map((cat) => (
                 <div key={cat._id} className="space-y-1">
                   <Link
-                    to={`/?category=${cat.slug}`}
+                    to={`/catalog?category=${cat.slug}`}
                     onClick={() => setMobileOpen(false)}
                     className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-brand-600"
                   >
@@ -132,7 +132,7 @@ export function Header() {
                       {cat.children.map((sub) => (
                         <Link
                           key={sub._id}
-                          to={`/?category=${cat.slug}&subCategory=${sub.slug}`}
+                          to={`/catalog?category=${cat.slug}&subCategory=${sub.slug}`}
                           onClick={() => setMobileOpen(false)}
                           className="block rounded-lg px-3 py-1.5 text-xs text-ink-600 hover:bg-paper-100 hover:text-ink-900"
                         >

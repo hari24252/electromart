@@ -3,7 +3,6 @@ import { conflict, notFound } from '../../utils/apiError.js';
 import { logger } from '../../config/logger.js';
 import { ensureObjectId } from '../../utils/ids.js';
 import { writeAdminAudit } from '../../services/audit.service.js';
-import { invalidateCache } from '../../services/cache.service.js';
 import { productRepository } from '../product/product.repository.js';
 import { couponService, type CouponResolution } from '../coupon/coupon.service.js';
 import { orderRepository } from './order.repository.js';
@@ -59,7 +58,6 @@ export const orderService = {
     } catch (error) {
       logger.error({ err: error, orderNumber: order.orderNumber }, 'Order was placed but inventory audit logging failed');
     }
-    await invalidateCache('products:');
     return order;
   },
 
@@ -81,7 +79,6 @@ export const orderService = {
       const product = await productRepository.restoreStock(item.product.toString(), item.quantity);
       if (product) await orderRepository.createInventoryLog({ product: item.product, change: item.quantity, previousStock: product.stock - item.quantity, resultingStock: product.stock, reason: 'cancellation', reference: order.orderNumber });
     }));
-    await invalidateCache('products:');
     return order;
   },
 

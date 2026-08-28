@@ -6,13 +6,14 @@ import { CouponInput } from '@/components/store/CouponInput';
 import { OrderSummaryCard } from '@/components/store/OrderSummaryCard';
 import { Breadcrumbs, EmptyState } from '@/components/ui/Misc';
 import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
 import { formatCurrency } from '@/lib/utils';
 import { api } from '@/api/services';
 import { getApiErrorMessage } from '@/api/client';
 import { useToast } from '@/components/ui/Toast';
 
 export function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, couponCode, couponDiscount, setCoupon } = useCartStore();
+  const { items, removeItem, updateQuantity, clearCart, couponCode, couponDiscount, setCoupon, lastError, clearError } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -68,6 +69,8 @@ export function CartPage() {
       <h1 className="text-2xl font-bold uppercase tracking-tight mt-3 mb-6">
         Shopping Cart ({items.length} items)
       </h1>
+
+      {lastError && <Alert variant="error" title="Cart not synchronized" onClose={clearError} className="mb-4">{lastError}</Alert>}
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Items */}
@@ -131,7 +134,7 @@ export function CartPage() {
             >
               Clear Cart
             </button>
-            <Link to="/" className="text-sm font-medium text-primary-600 hover:text-primary-700">
+            <Link to="/catalog" className="text-sm font-medium text-primary-600 hover:text-primary-700">
               Continue Shopping
             </Link>
           </div>
@@ -170,5 +173,3 @@ export function CartPage() {
     </div>
   );
 }
-
-import { useState } from 'react';

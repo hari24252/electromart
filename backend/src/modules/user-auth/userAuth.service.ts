@@ -1,9 +1,7 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { conflict, forbidden, notFound, unauthorized } from '../../utils/apiError.js';
-import { generateOtp, hashOtp } from '../../utils/otp.js';
 import { signToken, verifyToken } from '../../utils/tokens.js';
-import { dispatchOtpEmail } from '../../jobs/email.queue.js';
 import { userAuthRepository } from './userAuth.repository.js';
 
 type ContactInput = { email?: string; phone?: string };
@@ -38,69 +36,16 @@ export const userAuthService = {
       if (await userAuthRepository.findByIdentifier(identifier)) throw conflict('An account with that email or phone already exists', 'ACCOUNT_EXISTS');
     }
     const passwordHash = await bcrypt.hash(input.password, 12);
-    return userAuthRepository.create({ name: input.name, email: input.email?.toLowerCase(), phone: input.phone, passwordHash });
-  },
-
-  async sendOtp(identifierInput: string, purpose: 'signup' | 'login' | 'reset') {
-    const identifier = normalizedIdentifier(identifierInput);
-    const user = await userAuthRepository.findByIdentifier(identifier, purpose === 'login');
-    if (!user) throw notFound('Account');
-    if (!user.isActive) throw forbidden('This account has been disabled');
-    if (purpose === 'signup' && user.isVerified) throw conflict('This account is already verified', 'ALREADY_VERIFIED');
-    if ((purpose === 'login' || purpose === 'reset') && !user.isVerified) throw forbidden('Verify your account before continuing');
-    if (purpose === 'login' && (!user.loginVerifiedUntil || user.loginVerifiedUntil <= new Date())) throw forbidden('Complete the password check before requesting a login OTP');
-    const otp = generateOtp();
-    await userAuthRepository.createOtp(identifier, purpose, hashOtp(otp));
-    await dispatchOtpEmail({ identifier, otp, purpose });
-  },
-
-  async requestPasswordReset(identifierInput: string) {
-    const identifier = normalizedIdentifier(identifierInput);
-    const user = await userAuthRepository.findByIdentifier(identifier);
-    // Preserve a uniform response for account-recovery requests and avoid revealing account state.
-    if (!user || !user.isActive || !user.isVerified) return;
-    const otp = generateOtp();
-    await userAuthRepository.createOtp(identifier, 'reset', hashOtp(otp));
-    await dispatchOtpEmail({ identifier, otp, purpose: 'reset' });
-  },
-
-  async verifyOtp(identifierInput: string, purpose: 'signup' | 'login' | 'reset', otp: string) {
-    const identifier = normalizedIdentifier(identifierInput);
-    const otpRecord = await userAuthRepository.findOtp(identifier, purpose);
-    if (!otpRecord || otpRecord.attempts >= 5) throw unauthorized('OTP is invalid or has expired');
-    if (hashOtp(otp) !== otpRecord.codeHash) {
-      await userAuthRepository.incrementOtpAttempt(otpRecord._id.toString());
-      throw unauthorized('OTP is invalid or has expired');
-    }
-    const user = await userAuthRepository.findByIdentifier(identifier, purpose === 'login');
-    if (!user) throw notFound('Account');
-    await userAuthRepository.deleteOtp(otpRecord._id.toString());
-    if (purpose === 'signup') return userAuthRepository.verifyUser(user.id);
-    if (purpose === 'reset') {
-      await userAuthRepository.setResetVerified(user.id, new Date(Date.now() + 15 * 60 * 1000));
-      return { resetVerified: true };
-    }
-    if (!user.isVerified || !user.isActive) throw unauthorized('Account is not available');
-    if (!user.loginVerifiedUntil || user.loginVerifiedUntil <= new Date()) throw unauthorized('Complete the password check before verifying the login OTP');
-    await userAuthRepository.clearLoginVerified(user.id);
-    await userAuthRepository.updateLastLogin(user.id);
+    const user = await userAuthRepository.create({ name: input.name, email: input.email?.toLowerCase(), phone: input.phone, passwordHash, isVerified: true });
     return issueSession(user);
   },
 
-  async startLogin(identifierInput: string, password: string) {
+  async login(identifierInput: string, password: string) {
     const user = await userAuthRepository.findByIdentifier(normalizedIdentifier(identifierInput), true);
     if (!user || !await bcrypt.compare(password, String(user.passwordHash))) throw unauthorized('Invalid identifier or password');
     if (!user.isActive) throw forbidden('This account has been disabled');
-    if (!user.isVerified) throw forbidden('Verify your account before signing in');
-    await userAuthRepository.setLoginVerified(user.id, new Date(Date.now() + 10 * 60 * 1000));
-    await this.sendOtp(identifierInput, 'login');
-  },
-
-  async resetPassword(identifierInput: string, password: string) {
-    const user = await userAuthRepository.findByIdentifier(normalizedIdentifier(identifierInput), true);
-    if (!user || !user.resetVerifiedUntil || user.resetVerifiedUntil <= new Date()) throw unauthorized('Verify the reset OTP before setting a new password');
-    const passwordHash = await bcrypt.hash(password, 12);
-    await userAuthRepository.updatePassword(user.id, passwordHash);
+    await userAuthRepository.updateLastLogin(user.id);
+    return issueSession(user);
   },
 
   async refresh(refreshToken: string) {

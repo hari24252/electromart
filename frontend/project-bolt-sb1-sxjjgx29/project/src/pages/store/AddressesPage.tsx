@@ -24,8 +24,8 @@ export function AddressesPage() {
   useEffect(() => {
     void api.addresses.list()
       .then((remoteAddresses) => updateUser({ addresses: remoteAddresses }))
-      .catch(() => undefined);
-  }, [updateUser]);
+      .catch((error) => toast('error', getApiErrorMessage(error), 'Could not load saved addresses'));
+  }, [toast, updateUser]);
 
   const handleSubmit = async (address: Omit<Address, '_id'>) => {
     try {

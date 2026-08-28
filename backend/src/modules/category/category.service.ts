@@ -2,7 +2,6 @@ import { conflict, notFound } from '../../utils/apiError.js';
 import { ensureObjectId } from '../../utils/ids.js';
 import { slugifyName } from '../../utils/slug.js';
 import { writeAdminAudit } from '../../services/audit.service.js';
-import { invalidateCache, readCache, writeCache } from '../../services/cache.service.js';
 import { categoryRepository } from './category.repository.js';
 
 type CategoryInput = { name?: string; parentCategory?: string | null; image?: string; isActive?: boolean; sortOrder?: number };
@@ -20,8 +19,6 @@ async function uniqueSlug(name: string, excludingId?: string): Promise<string> {
 
 export const categoryService = {
   async tree() {
-    const cached = await readCache<unknown[]>('categories:tree');
-    if (cached) return cached;
     const categories = await categoryRepository.findAll();
     const nodes = new Map(categories.map((category) => [category._id.toString(), { ...category, subcategories: [] as unknown[] }]));
     const roots: unknown[] = [];
@@ -34,7 +31,6 @@ export const categoryService = {
         else roots.push(node);
       } else roots.push(node);
     }
-    await writeCache('categories:tree', roots, 300);
     return roots;
   },
 
@@ -52,7 +48,6 @@ export const categoryService = {
       if (!parent) throw notFound('Parent category');
     }
     const category = await categoryRepository.create(data);
-    await Promise.all([invalidateCache('categories:'), invalidateCache('products:')]);
     await writeAdminAudit(adminId, 'category.create', 'category', category.id, { name: category.name });
     return category;
   },
@@ -79,7 +74,6 @@ export const categoryService = {
     if (input.name) data.slug = await uniqueSlug(input.name, categoryId);
     const category = await categoryRepository.update(categoryId, data);
     if (!category) throw notFound('Category');
-    await Promise.all([invalidateCache('categories:'), invalidateCache('products:')]);
     await writeAdminAudit(adminId, 'category.update', 'category', category.id, input);
     return category;
   },
@@ -90,7 +84,6 @@ export const categoryService = {
     if (children > 0 || products > 0) throw conflict('Cannot delete a category that still has subcategories or active products', 'CATEGORY_IN_USE');
     const category = await categoryRepository.remove(categoryId);
     if (!category) throw notFound('Category');
-    await Promise.all([invalidateCache('categories:'), invalidateCache('products:')]);
     await writeAdminAudit(adminId, 'category.delete', 'category', categoryId, { name: category.name });
   },
 };

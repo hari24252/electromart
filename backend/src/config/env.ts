@@ -1,6 +1,11 @@
 import 'dotenv/config';
 import { z } from 'zod';
 
+const optionalBootstrapValue = <T extends z.ZodTypeAny>(schema: T) => z.preprocess(
+  (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
+  schema.optional(),
+);
+
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
@@ -13,17 +18,10 @@ const schema = z.object({
   ACCESS_TOKEN_TTL: z.string().regex(/^\d+[smhd]$/, 'Use an integer JWT duration such as 15m or 30d').default('15m'),
   REFRESH_TOKEN_TTL: z.string().regex(/^\d+[smhd]$/, 'Use an integer JWT duration such as 15m or 30d').default('30d'),
   COOKIE_SECURE: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
-  SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.coerce.number().int().positive().default(587),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().default('ElectroMart <no-reply@example.com>'),
   CLOUDINARY_URL: z.union([z.string().url(), z.literal('')]).transform((v) => (v === '' ? undefined : v)).optional(),
-  REDIS_URL: z.union([z.string().url(), z.literal('')]).transform((v) => (v === '' ? undefined : v)).optional(),
-  CACHE_TTL_SECONDS: z.coerce.number().int().min(0).max(3600).default(60),
-  INITIAL_ADMIN_NAME: z.string().min(2).default('Store Administrator'),
-  INITIAL_ADMIN_EMAIL: z.string().email().default('hariharan64847@gmail.com'),
-  INITIAL_ADMIN_PASSWORD: z.string().min(10).default('hariharan@28'),
+  INITIAL_ADMIN_NAME: optionalBootstrapValue(z.string().trim().min(2)),
+  INITIAL_ADMIN_EMAIL: optionalBootstrapValue(z.string().trim().email()),
+  INITIAL_ADMIN_PASSWORD: optionalBootstrapValue(z.string().min(10)),
   SEED_DEMO_CATALOG: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
 });
 
@@ -53,7 +51,12 @@ if (value.NODE_ENV === 'production') {
     value.USER_REFRESH_JWT_SECRET,
     value.ADMIN_REFRESH_JWT_SECRET,
   ].some((secret) => /development-|replace-with-/i.test(secret));
-  if (missing.length || placeholderSecrets || !value.COOKIE_SECURE) {
+  const unsafeBootstrapValues = [
+    value.INITIAL_ADMIN_NAME?.toLowerCase() === 'store administrator',
+    value.INITIAL_ADMIN_EMAIL?.toLowerCase() === 'admin@example.com',
+    value.INITIAL_ADMIN_PASSWORD === 'ChangeMe123!',
+  ].some(Boolean);
+  if (missing.length || placeholderSecrets || unsafeBootstrapValues || !value.COOKIE_SECURE) {
     throw new Error('Production requires explicit non-placeholder secrets, administrator credentials, CLIENT_ORIGINS, MONGODB_URI, and COOKIE_SECURE=true');
   }
 }

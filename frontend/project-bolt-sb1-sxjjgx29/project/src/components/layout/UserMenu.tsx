@@ -1,14 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Package, MapPin, Settings, Shield } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
+import { useWishlistStore } from '@/stores/wishlistStore';
 import { useState, useRef, useEffect } from 'react';
 import { api } from '@/api/services';
+import { getApiErrorMessage } from '@/api/client';
+import { useToast } from '@/components/ui/Toast';
 
 export function UserMenu() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const resetCart = useCartStore((state) => state.reset);
+  const clearWishlist = useWishlistStore((state) => state.clear);
+  const { toast } = useToast();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -18,8 +25,14 @@ export function UserMenu() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleLogout = () => {
-    void api.auth.logout().catch(() => undefined);
+  const handleLogout = async () => {
+    try {
+      await api.auth.logout();
+    } catch (error) {
+      toast('error', getApiErrorMessage(error), 'Signed out on this device only');
+    }
+    resetCart();
+    clearWishlist();
     logout();
     setIsOpen(false);
     navigate('/');
