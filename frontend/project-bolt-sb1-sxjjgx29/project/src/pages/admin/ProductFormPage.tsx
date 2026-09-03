@@ -68,6 +68,7 @@ export function ProductFormPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(editing);
   const [saving, setSaving] = useState(false);
+  const [bulkSpecs, setBulkSpecs] = useState('');
 
   useEffect(() => {
     if (!editing || !id) return;
@@ -99,6 +100,52 @@ export function ProductFormPage() {
     if (!newSpec.group.trim() || !newSpec.key.trim() || !newSpec.value.trim()) return;
     setSpecs((current) => [...current, { group: newSpec.group.trim(), key: newSpec.key.trim(), value: newSpec.value.trim() }]);
     setNewSpec({ group: '', key: '', value: '' });
+  };
+
+  const handleBulkSpecs = () => {
+    if (!bulkSpecs.trim()) return;
+    
+    const lines = bulkSpecs.trim().split('\n');
+    const newSpecs: Specification[] = [];
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      
+      // Support multiple formats:
+      // 1. "Group | Key | Value" (pipe separated)
+      // 2. "Group, Key, Value" (comma separated)
+      // 3. "Group: Key: Value" (colon separated)
+      // 4. "Group\tKey\tValue" (tab separated - from Excel)
+      
+      let parts: string[] = [];
+      
+      if (trimmed.includes('|')) {
+        parts = trimmed.split('|').map(p => p.trim());
+      } else if (trimmed.includes('\t')) {
+        parts = trimmed.split('\t').map(p => p.trim());
+      } else if (trimmed.split(',').length === 3) {
+        parts = trimmed.split(',').map(p => p.trim());
+      } else if (trimmed.split(':').length === 3) {
+        parts = trimmed.split(':').map(p => p.trim());
+      }
+      
+      if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
+        newSpecs.push({
+          group: parts[0],
+          key: parts[1],
+          value: parts[2],
+        });
+      }
+    }
+    
+    if (newSpecs.length > 0) {
+      setSpecs((current) => [...current, ...newSpecs]);
+      setBulkSpecs('');
+      toast('success', `Added ${newSpecs.length} specifications`, 'Bulk add successful');
+    } else {
+      toast('error', 'Use format: Group | Key | Value (one per line)', 'Invalid format');
+    }
   };
 
   const addBoxItem = () => {
@@ -209,8 +256,54 @@ export function ProductFormPage() {
 
       <section className="brutal-card bg-white p-6">
         <h3 className="font-bold text-sm uppercase tracking-wide mb-4 pb-3 border-b-2 border-ink-100">Specifications</h3>
-        <div className="space-y-2 mb-4">{specs.map((spec, index) => <div key={`${spec.group}-${spec.key}-${index}`} className="flex items-center gap-2 brutal-border bg-paper-100 p-2"><span className="text-xs font-bold bg-ink-900 text-white px-2 py-0.5">{spec.group}</span><span className="text-sm font-semibold">{spec.key}:</span><span className="text-sm text-ink-600 flex-1">{spec.value}</span><button onClick={() => setSpecs((current) => current.filter((_, specIndex) => specIndex !== index))} className="brutal-border bg-white p-1 hover:bg-danger-500 hover:text-white" aria-label={`Remove ${spec.key}`}><X className="w-3 h-3" /></button></div>)}</div>
-        <div className="grid md:grid-cols-3 gap-2"><input placeholder="Group (Display)" value={newSpec.group} onChange={(event) => setNewSpec({ ...newSpec, group: event.target.value })} className="brutal-input" /><input placeholder="Key (Screen size)" value={newSpec.key} onChange={(event) => setNewSpec({ ...newSpec, key: event.target.value })} className="brutal-input" /><div className="flex gap-1"><input placeholder="Value" value={newSpec.value} onChange={(event) => setNewSpec({ ...newSpec, value: event.target.value })} onKeyDown={(event) => { if (event.key === 'Enter') addSpec(); }} className="brutal-input" /><Button type="button" size="icon" onClick={addSpec} aria-label="Add specification"><Plus className="w-4 h-4" /></Button></div></div>
+        
+        {/* Bulk Paste Area */}
+        <div className="mb-4 p-4 bg-paper-50 rounded-lg border-2 border-dashed border-paper-300">
+          <h4 className="text-sm font-semibold mb-2">Bulk Add Specifications</h4>
+          <p className="text-xs text-ink-500 mb-3">
+            Paste multiple specs (one per line). Supported formats:<br/>
+            • <code className="bg-white px-1">Display | Screen Size | 6.8 inches</code><br/>
+            • <code className="bg-white px-1">Display, Screen Size, 6.8 inches</code><br/>
+            • <code className="bg-white px-1">Display: Screen Size: 6.8 inches</code><br/>
+            • Or copy from Excel/Sheets (tab-separated)
+          </p>
+          <textarea
+            value={bulkSpecs}
+            onChange={(e) => setBulkSpecs(e.target.value)}
+            placeholder="Display | Screen Size | 6.8 inches&#10;Camera | Main Camera | 200MP&#10;Processor | Chipset | Snapdragon 8 Gen 3"
+            className="brutal-input w-full h-32 font-mono text-sm"
+          />
+          <Button type="button" size="sm" onClick={handleBulkSpecs} className="mt-2">
+            <Plus className="w-4 h-4" /> Add All Specifications
+          </Button>
+        </div>
+
+        {/* Existing Specifications List */}
+        <div className="space-y-2 mb-4">
+          {specs.map((spec, index) => (
+            <div key={`${spec.group}-${spec.key}-${index}`} className="flex items-center gap-2 brutal-border bg-paper-100 p-2">
+              <span className="text-xs font-bold bg-ink-900 text-white px-2 py-0.5">{spec.group}</span>
+              <span className="text-sm font-semibold">{spec.key}:</span>
+              <span className="text-sm text-ink-600 flex-1">{spec.value}</span>
+              <button onClick={() => setSpecs((current) => current.filter((_, specIndex) => specIndex !== index))} className="brutal-border bg-white p-1 hover:bg-danger-500 hover:text-white" aria-label={`Remove ${spec.key}`}>
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Single Add */}
+        <div className="border-t-2 border-paper-200 pt-4">
+          <h4 className="text-sm font-semibold mb-3">Or Add One at a Time</h4>
+          <div className="grid md:grid-cols-3 gap-2">
+            <input placeholder="Group (Display)" value={newSpec.group} onChange={(event) => setNewSpec({ ...newSpec, group: event.target.value })} className="brutal-input" />
+            <input placeholder="Key (Screen size)" value={newSpec.key} onChange={(event) => setNewSpec({ ...newSpec, key: event.target.value })} className="brutal-input" />
+            <div className="flex gap-1">
+              <input placeholder="Value" value={newSpec.value} onChange={(event) => setNewSpec({ ...newSpec, value: event.target.value })} onKeyDown={(event) => { if (event.key === 'Enter') addSpec(); }} className="brutal-input" />
+              <Button type="button" size="icon" onClick={addSpec} aria-label="Add specification"><Plus className="w-4 h-4" /></Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="brutal-card bg-white p-6"><h3 className="font-bold text-sm uppercase tracking-wide mb-4 pb-3 border-b-2 border-ink-100">What’s in the box</h3><div className="space-y-2 mb-3">{boxItems.map((item, index) => <div key={`${item}-${index}`} className="flex items-center gap-2 brutal-border bg-paper-100 p-2"><span className="text-sm flex-1">{item}</span><button onClick={() => setBoxItems((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="brutal-border bg-white p-1 hover:bg-danger-500 hover:text-white" aria-label={`Remove ${item}`}><X className="w-3 h-3" /></button></div>)}</div><div className="flex gap-2"><input placeholder="Add an included item" value={newBoxItem} onChange={(event) => setNewBoxItem(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') addBoxItem(); }} className="brutal-input" /><Button type="button" size="sm" onClick={addBoxItem}><Plus className="w-4 h-4" /> Add</Button></div></section>
