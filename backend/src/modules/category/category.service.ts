@@ -20,7 +20,17 @@ async function uniqueSlug(name: string, excludingId?: string): Promise<string> {
 export const categoryService = {
   async tree() {
     const categories = await categoryRepository.findAll();
-    const nodes = new Map(categories.map((category) => [category._id.toString(), { ...category, subcategories: [] as unknown[] }]));
+    
+    // Get product counts for all categories efficiently using aggregation
+    const productCounts = await categoryRepository.getProductCountsForAllCategories();
+    const countMap = new Map(productCounts.map((item) => [item._id.toString(), item.count]));
+    
+    const nodes = new Map(
+      categories.map((category) => [
+        category._id.toString(),
+        { ...category, subcategories: [] as unknown[], productCount: countMap.get(category._id.toString()) || 0 },
+      ])
+    );
     const roots: unknown[] = [];
     for (const category of categories) {
       const node = nodes.get(category._id.toString());

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Image as ImageIcon, Plus, Save, Upload, X } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, Plus, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea, Select } from '@/components/ui/Input';
 import { Switch } from '@/components/ui/Switch';
-import { MediaImage } from '@/components/ui/MediaImage';
+import { ImageUploadPreview } from '@/components/admin/ImageUploadPreview';
 import { useDataStore } from '@/stores/dataStore';
 import { useToast } from '@/components/ui/Toast';
 import { api } from '@/api/services';
@@ -107,14 +107,12 @@ export function ProductFormPage() {
     setNewBoxItem('');
   };
 
-  const handleFiles = (selected: FileList | null) => {
-    if (!selected) return;
-    const next = Array.from(selected);
-    if (next.some((file) => file.size > 5 * 1024 * 1024)) {
+  const handleFiles = (selected: File[]) => {
+    if (selected.some((file) => file.size > 5 * 1024 * 1024)) {
       toast('error', 'Each image must be 5 MB or smaller.', 'Image too large');
       return;
     }
-    setFiles((current) => [...current, ...next].slice(0, Math.max(0, 8 - (product?.images.length ?? 0))));
+    setFiles(selected);
   };
 
   const makeDraft = (): ProductDraft => ({
@@ -192,12 +190,19 @@ export function ProductFormPage() {
       </section>
 
       <section className="brutal-card bg-white p-6">
-        <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-ink-100"><div><h3 className="font-bold text-sm uppercase tracking-wide">Product images</h3><p className="text-xs text-ink-500 mt-1">Upload JPEG, PNG, WebP or AVIF. You can replace these with final product photography later.</p></div><ImageIcon className="w-5 h-5 text-primary-600" /></div>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-          {product?.images.map((image, index) => <MediaImage key={image} src={image} alt={`${product.name} ${index + 1}`} fallbackLabel={product.name} className="aspect-square w-full object-cover brutal-border" />)}
-          {files.map((file, index) => <div key={`${file.name}-${index}`} className="relative aspect-square brutal-border bg-paper-100 p-2 flex flex-col justify-between"><span className="text-2xs font-bold line-clamp-2">{file.name}</span><button onClick={() => setFiles((current) => current.filter((_, fileIndex) => fileIndex !== index))} className="self-end brutal-border bg-white p-1 hover:bg-danger-500 hover:text-white" aria-label={`Remove ${file.name}`}><X className="w-3 h-3" /></button></div>)}
-          {(product?.images.length ?? 0) + files.length < 8 && <label className="aspect-square brutal-border border-dashed bg-paper-100 flex flex-col items-center justify-center cursor-pointer hover:bg-paper-200 transition-colors"><Upload className="w-5 h-5 text-ink-400 mb-1" /><span className="text-2xs font-bold uppercase text-ink-500">Upload</span><input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" className="hidden" onChange={(event) => handleFiles(event.target.files)} /></label>}
+        <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-ink-100">
+          <div>
+            <h3 className="font-bold text-sm uppercase tracking-wide">Product images</h3>
+            <p className="text-xs text-ink-500 mt-1">Upload clear product photos. Images are permanently stored and will load consistently across all devices.</p>
+          </div>
+          <ImageIcon className="w-5 h-5 text-primary-600" />
         </div>
+        <ImageUploadPreview
+          existingImages={product?.images ?? []}
+          productName={form.name || 'Product'}
+          maxImages={8}
+          onFilesChange={handleFiles}
+        />
       </section>
 
       <section className="brutal-card bg-white p-6 space-y-4"><h3 className="font-bold text-sm uppercase tracking-wide pb-3 border-b-2 border-ink-100">Descriptions</h3><Textarea label="Short Description" value={form.shortDescription} onChange={(event) => setForm({ ...form, shortDescription: event.target.value })} rows={2} placeholder="The clear, card-friendly product summary." /><Textarea label="Long Description (HTML supported)" value={form.longDescription} onChange={(event) => setForm({ ...form, longDescription: event.target.value })} rows={6} placeholder="Full product detail content." /></section>

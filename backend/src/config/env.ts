@@ -11,6 +11,7 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(5000),
   MONGODB_URI: z.string().min(1).default('mongodb://127.0.0.1:27017/electronics-commerce'),
   CLIENT_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
+  BASE_URL: z.string().url().optional().or(z.literal('')).transform((v) => (v === '' ? undefined : v)),
   USER_JWT_SECRET: z.string().min(32).default('development-user-secret-must-be-at-least-32-chars'),
   ADMIN_JWT_SECRET: z.string().min(32).default('development-admin-secret-must-be-at-least-32-chars'),
   USER_REFRESH_JWT_SECRET: z.string().min(32).default('development-user-refresh-secret-min-32-chars'),

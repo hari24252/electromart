@@ -37,3 +37,5 @@ backend/public/uploads/products/*
 **/node_modules/.pnpm/
 **/node_modules/.ignored_react/
 **/node_modules/.ignored_react-dom/
+.vercel
+.env*.local

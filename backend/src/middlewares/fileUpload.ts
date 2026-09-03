@@ -39,7 +39,22 @@ export const productUpload = upload.fields([
 ]);
 
 export const productImageUpload = upload.array('images', 8);
-export const localFileUrl = (filename: string): string => `/uploads/products/${filename}`;
+
+/**
+ * Returns the full URL for a local file. In production on Render, this uses the public URL.
+ * For local development, it returns a relative path.
+ */
+export const localFileUrl = (filename: string): string => {
+  const relativePath = `/uploads/products/${filename}`;
+  
+  // In production, return full URL with the base URL from environment
+  if (env.NODE_ENV === 'production' && env.BASE_URL) {
+    return `${env.BASE_URL}${relativePath}`;
+  }
+  
+  return relativePath;
+};
+
 export const cloudinaryEnabled = Boolean(env.CLOUDINARY_URL);
 
 export async function removeUploadedFiles(files: Express.Request['files'] | undefined): Promise<void> {
