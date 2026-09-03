@@ -4,7 +4,13 @@ import type { Express } from 'express';
 import { env } from '../config/env.js';
 import { localFileUrl } from '../middlewares/fileUpload.js';
 
-if (env.CLOUDINARY_URL) cloudinary.config({ secure: true });
+// Configure Cloudinary with explicit credentials
+if (env.CLOUDINARY_URL) {
+  cloudinary.config({ 
+    secure: true,
+    // Cloudinary URL is automatically parsed by the SDK
+  });
+}
 
 /**
  * Local disk is always used as Multer's safe ingestion point. When CLOUDINARY_URL is set,
@@ -12,30 +18,27 @@ if (env.CLOUDINARY_URL) cloudinary.config({ secure: true });
  */
 export async function resolveProductImageUrls(files: Express.Multer.File[]): Promise<string[]> {
   if (!env.CLOUDINARY_URL) {
-    return files.map((file) => localFileUrl(file.filename));
+    throw new Error('CLOUDINARY_URL must be configured in production. Images cannot be stored locally on Render.');
   }
   
-  try {
-    const uploaded = await Promise.all(
-      files.map((file) => cloudinary.uploader.upload(file.path, { 
-        folder: 'electronics-commerce/products', 
-        resource_type: 'image',
-        timeout: 60000
-      }))
-    );
-    
-    // Clean up local files after successful Cloudinary upload
-    await Promise.all(files.map(async (file) => {
-      try { await fs.unlink(file.path); } catch {
-        // Ignore cleanup errors
-      }
-    }));
-    
-    return uploaded.map((result) => result.secure_url);
-  } catch (error) {
-    // Cloudinary failed - fall back to local storage
-    console.error('Cloudinary upload failed, using local storage:', error instanceof Error ? error.message : error);
-    return files.map((file) => localFileUrl(file.filename));
-  }
+  // Upload to Cloudinary (required)
+  const uploaded = await Promise.all(
+    files.map((file) => cloudinary.uploader.upload(file.path, { 
+      folder: 'electronics-commerce/products', 
+      resource_type: 'image',
+      timeout: 60000
+    }))
+  );
+  
+  // Clean up local temp files
+  await Promise.all(files.map(async (file) => {
+    try { 
+      await fs.unlink(file.path); 
+    } catch {
+      // Ignore cleanup errors - temp files will be cleaned up by system
+    }
+  }));
+  
+  return uploaded.map((result) => result.secure_url);
 }
 
